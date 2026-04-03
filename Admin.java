@@ -1,7 +1,7 @@
 /**
  * Lớp Admin kế thừa User
  */
-public class Admin extends User {
+public class Admin extends Users {
 
     public Admin(String id, String username, String password, String email) {
         // Mặc định vai trò là ADMIN 
