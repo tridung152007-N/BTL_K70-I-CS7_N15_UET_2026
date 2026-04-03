@@ -2,24 +2,24 @@
  * Lớp Item kế thừa Entity [cite: 112]
  */
 public abstract class Items extends Entity {
-    private String itemName;
-    private String description;
-    private double startingPrice; // [cite: 42]
+    private String name;
+    private String desc;
+    private double price; // [cite: 42]
     private String sellerId;
 
-    public Items(String id, String itemName, String description, double startingPrice, String sellerId) {
+    public Items(String id, String name, String desc, double price, String sellerId) {
         super(id);
-        this.itemName = itemName;
-        this.description = description;
-        this.startingPrice = startingPrice;
+        this.name = name;
+        this.desc = desc;
+        this.price = price;
         this.sellerId = sellerId;
     }
 
-    public String getItemName() { return itemName; }
-    public double getStartingPrice() { return startingPrice; }
+    public String getItemName() { return name; }
+    public double getStartingPrice() { return price; }
 
     @Override
     public String getInfo() {
-        return String.format("Item [%s]: %s - Giá khởi điểm: %.2f", getId(), itemName, startingPrice);
+        return String.format("Item [%s]: %s - Giá khởi điểm: %.2f", getId(), name, price);
     }
 }
