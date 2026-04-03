@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Auction extends Entity implements IBiddable, ISearchable {
-    private Item item;
+    private Items item;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private double currentPrice;

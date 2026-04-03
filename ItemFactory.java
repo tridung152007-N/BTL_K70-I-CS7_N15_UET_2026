@@ -1,5 +1,5 @@
 public class ItemFactory {
-    public static Item createItem(String type, String id, String name, double price, String sellerId) {
+    public static Items createItem(String type, String id, String name, double price, String sellerId) {
         switch (type.toUpperCase()) {
             case "ELECTRONICS":
                 return new Electronics(id, name, "Mô tả...", price, sellerId, 12);

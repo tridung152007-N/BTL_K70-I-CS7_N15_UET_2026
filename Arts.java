@@ -1,7 +1,7 @@
 /**
  * Lớp Arts kế thừa Item
  */
-public class Arts extends Item {
+public class Arts extends Items {
     private String artistName; // Tên họa sĩ/tác giả
     private String material;   // Chất liệu (Sơn dầu, gỗ, đá...)
 

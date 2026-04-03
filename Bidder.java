@@ -1,7 +1,7 @@
 /**
  * Lớp Bidder kế thừa User [cite: 115]
  */
-public class Bidder extends User {
+public class Bidder extends Users {
     private double balance;
 
     public Bidder(String id, String username, String password, String email, double balance) {
