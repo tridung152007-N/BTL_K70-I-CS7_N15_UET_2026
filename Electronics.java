@@ -1,7 +1,7 @@
 /**
  * Lớp Electronics kế thừa Item [cite: 113]
  */
-public class Electronics extends Item {
+public class Electronics extends Items {
     private int warrantyMonths;
 
     public Electronics(String id, String name, String desc, double price, String sellerId, int warranty) {

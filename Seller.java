@@ -1,7 +1,7 @@
 /**
  * Lớp Seller kế thừa User [cite: 115]
  */
-public class Seller extends User {
+public class Seller extends Users {
     public Seller(String id, String username, String password, String email) {
         super(id, username, password, email, "SELLER");
     }

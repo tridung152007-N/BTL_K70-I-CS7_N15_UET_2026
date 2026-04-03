@@ -1,7 +1,7 @@
 /**
  * Lớp Vehicle kế thừa Item
  */
-public class Vehicles extends Item {
+public class Vehicles extends Items {
     private String engineNumber; // Số máy/Số khung
     private int manufacturingYear; // Năm sản xuất
 
