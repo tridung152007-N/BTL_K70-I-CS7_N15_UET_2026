@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock; // Import để xử lý concurrency [cite: 226]
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Auction extends Entity implements IBiddable, ISearchable {
     private Item item;
@@ -10,11 +10,11 @@ public class Auction extends Entity implements IBiddable, ISearchable {
     private double currentPrice;
     private String highestBidderId;
     
-    // Trạng thái phiên theo tài liệu: OPEN -> RUNNING -> FINISHED -> PAID / CANCELED 
     public enum AuctionStatus { OPEN, RUNNING, FINISHED, PAID, CANCELED }
     private AuctionStatus status; 
 
-    // Sử dụng ReentrantLock để tránh Lost Update và Race Condition 
+    // Danh sách các người quan sát (Observers) [cite: 72]
+    private final List<AuctionObserver> observers = new ArrayList<>();
     private final ReentrantLock lock = new ReentrantLock();
 
     public Auction(String id, Item item, LocalDateTime start, LocalDateTime end) {
@@ -26,37 +26,64 @@ public class Auction extends Entity implements IBiddable, ISearchable {
         this.status = AuctionStatus.OPEN;
     }
 
+    // Đăng ký người quan sát mới (ví dụ: một ClientHandler mới kết nối) [cite: 129]
+    public void addObserver(AuctionObserver observer) {
+        lock.lock();
+        try {
+            observers.add(observer);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void removeObserver(AuctionObserver observer) {
+        lock.lock();
+        try {
+            observers.remove(observer);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    // Thông báo cho tất cả người quan sát khi giá thay đổi 
+    private void notifyObservers() {
+        for (AuctionObserver observer : observers) {
+            observer.onPriceUpdate(this.getId(), this.currentPrice, this.highestBidderId);
+        }
+    }
+
     @Override
     public boolean placeBid(String bidderId, double amount) {
-        lock.lock(); // Bắt đầu khóa để đảm bảo chỉ 1 thread được xử lý đặt giá tại 1 thời điểm [cite: 226]
+        lock.lock(); 
         try {
-            // Kiểm tra tính hợp lệ: Phiên phải đang RUNNING và chưa hết giờ [cite: 49, 59, 221, 236]
+            // Kiểm tra trạng thái và thời gian [cite: 20, 73, 88]
             if (status != AuctionStatus.RUNNING || LocalDateTime.now().isAfter(endTime)) {
                 return false; 
             }
 
-            // Kiểm tra giá đặt phải cao hơn giá hiện tại [cite: 48, 58, 236]
+            // Kiểm tra giá đặt hợp lệ [cite: 20, 88]
             if (amount <= currentPrice) {
                 return false;
             }
 
-            // Cập nhật thông tin người dẫn đầu [cite: 50]
             this.currentPrice = amount;
             this.highestBidderId = bidderId;
             
-            // Ở tuần 7, bạn sẽ gọi notifyObservers() tại đây để cập nhật realtime [cite: 94, 220]
+            // Kích hoạt thông báo Realtime ngay sau khi cập nhật thành công 
+            notifyObservers();
+            
             return true;
         } finally {
-            lock.unlock(); // Luôn giải phóng khóa [cite: 226]
+            lock.unlock(); 
         }
     }
 
-    // Logic chuyển trạng thái phiên đấu giá [cite: 222, 224]
     public void updateStatus() {
         lock.lock();
         try {
             LocalDateTime now = LocalDateTime.now();
-            if (status == AuctionStatus.OPEN && now.isAfter(startTime)) {
+            // Logic chuyển trạng thái: OPEN -> RUNNING -> FINISHED [cite: 74, 75, 76]
+            if (status == AuctionStatus.OPEN && now.isAfter(startTime) && now.isBefore(endTime)) {
                 this.status = AuctionStatus.RUNNING;
             } else if (status == AuctionStatus.RUNNING && now.isAfter(endTime)) {
                 this.status = AuctionStatus.FINISHED;
@@ -77,7 +104,6 @@ public class Auction extends Entity implements IBiddable, ISearchable {
                 getId(), item.getItemName(), currentPrice, status, endTime);
     }
 
-    // Encapsulation: Getter/Setter [cite: 119]
     public AuctionStatus getStatus() { return status; }
     public void setStatus(AuctionStatus status) { this.status = status; }
     public double getCurrentPrice() { return currentPrice; }
