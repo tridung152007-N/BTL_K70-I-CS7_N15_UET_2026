@@ -1,6 +1,8 @@
 /**
  * Lớp Item kế thừa Entity [cite: 112]
  */
+package com.auction.model;
+
 public abstract class Items extends Entity {
     private String name;
     private String desc;

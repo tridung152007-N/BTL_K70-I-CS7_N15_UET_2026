@@ -3,6 +3,8 @@ import java.time.LocalDateTime;
 /**
  * Lớp cơ sở Entity (Abstract Class) 
  */
+package com.auction.model;
+
 public abstract class Entity {
     private String id; // [cite: 119]
     private LocalDateTime createdAt;

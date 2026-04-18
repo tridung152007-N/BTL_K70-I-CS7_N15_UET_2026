@@ -1,6 +1,8 @@
 /**
  * Lớp User kế thừa Entity 
  */
+package com.auction.model;
+
 public abstract class Users extends Entity {
     private String username;
     private String password;

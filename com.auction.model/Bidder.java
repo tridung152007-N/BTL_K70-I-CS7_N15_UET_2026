@@ -1,6 +1,8 @@
 /**
  * Lớp Bidder kế thừa User [cite: 115]
  */
+package com.auction.model;
+
 public class Bidder extends Users {
     private double balance;
 
