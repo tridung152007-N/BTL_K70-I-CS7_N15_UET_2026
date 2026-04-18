@@ -1,6 +1,8 @@
 /**
  * Lớp Vehicle kế thừa Item
  */
+package com.auction.model;
+
 public class Vehicles extends Items {
     private String engineNumber; // Số máy/Số khung
     private int manufacturingYear; // Năm sản xuất

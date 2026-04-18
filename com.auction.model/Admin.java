@@ -1,6 +1,8 @@
 /**
  * Lớp Admin kế thừa User
  */
+package com.auction.model;
+
 public class Admin extends Users {
 
     public Admin(String id, String username, String password, String email) {

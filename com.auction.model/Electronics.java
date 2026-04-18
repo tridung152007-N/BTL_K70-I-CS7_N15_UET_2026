@@ -1,6 +1,8 @@
 /**
  * Lớp Electronics kế thừa Item [cite: 113]
  */
+package com.auction.model;
+
 public class Electronics extends Items {
     private int warrantyMonths;
 
