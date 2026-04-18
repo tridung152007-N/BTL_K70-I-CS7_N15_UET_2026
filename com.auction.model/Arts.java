@@ -1,6 +1,8 @@
 /**
  * Lớp Arts kế thừa Item
  */
+package com.auction.model;
+
 public class Arts extends Items {
     private String artistName; // Tên họa sĩ/tác giả
     private String material;   // Chất liệu (Sơn dầu, gỗ, đá...)

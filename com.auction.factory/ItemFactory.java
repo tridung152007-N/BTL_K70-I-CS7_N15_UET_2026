@@ -1,3 +1,7 @@
+package com.auction.factory;
+import com.auction.model.Electronics;
+import com.auction.model.Arts;
+import com.auction.model.Vehicles;
 public class ItemFactory {
     public static Items createItem(String type, String id, String name, double price, String sellerId) {
         switch (type.toUpperCase()) {
