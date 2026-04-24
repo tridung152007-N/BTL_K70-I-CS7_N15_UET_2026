@@ -4,7 +4,7 @@
 package com.auction.observer;
 
 public interface IBiddable {
-    boolean placeBid(String bidderId, double amount); // Đặt giá
+    void placeBid(String bidderId, double amount) throws AuctionException; // Đặt giá
     double getCurrentPrice();                        // Lấy giá hiện tại
     boolean isAuctionActive();                       // Kiểm tra trạng thái phiên
 }
