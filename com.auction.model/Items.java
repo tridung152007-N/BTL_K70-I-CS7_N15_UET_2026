@@ -24,4 +24,14 @@ public abstract class Items extends Entity {
     public String getInfo() {
         return String.format("Item [%s]: %s - Giá khởi điểm: %.2f", getId(), name, price);
     }
+  
+    @Override
+    public boolean isAuctionActive() {
+        return this.status == AuctionStatus.RUNNING;
+    }
+
+
+    public String getId() {
+        return super.getId(); 
+    }
 }
