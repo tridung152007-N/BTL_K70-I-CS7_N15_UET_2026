@@ -1,12 +1,12 @@
+package com.auction.model;
+
 import java.time.LocalDateTime;
 
 /**
- * Lớp cơ sở Entity (Abstract Class) 
+ * Lớp cơ sở Entity (Abstract Class)
  */
-package com.auction.model;
-
 public abstract class Entity {
-    private String id; // [cite: 119]
+    private String id;
     private LocalDateTime createdAt;
 
     public Entity(String id) {
@@ -14,10 +14,8 @@ public abstract class Entity {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Encapsulation: getter/setter [cite: 119]
     public String getId() { return id; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
-    // Abstraction: Phương thức trừu tượng buộc lớp con thực thi [cite: 122]
     public abstract String getInfo();
 }
