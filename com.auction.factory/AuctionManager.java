@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Singleton quản lý toàn bộ phiên đấu giá
+ */
 public class AuctionManager {
     private static volatile AuctionManager instance;
     private final List<Auction> auctions = Collections.synchronizedList(new ArrayList<>());
@@ -26,5 +29,9 @@ public class AuctionManager {
         return auctions.stream()
                 .filter(a -> a.getId().equals(id))
                 .findFirst().orElse(null);
+    }
+
+    public List<Auction> getAllAuctions() {
+        return Collections.unmodifiableList(auctions);
     }
 }
