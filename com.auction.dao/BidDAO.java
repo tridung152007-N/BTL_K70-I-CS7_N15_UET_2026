@@ -2,6 +2,8 @@ package com.auction.dao;
 
 import com.auction.model.BidTransaction;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BidDAO {
 
@@ -17,16 +19,22 @@ public class BidDAO {
         }
     }
 
-    public void findByAuctionId(String auctionId) throws SQLException {
+    public List<BidTransaction> findByAuctionId(String auctionId) throws SQLException { // ✅ sửa lỗi: trả về List
         String sql = "SELECT * FROM bid_transactions WHERE auction_id=? ORDER BY bid_amount DESC";
+        List<BidTransaction> list = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, auctionId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                System.out.println("Bidder: " + rs.getString("bidder_id") 
-                    + " | Giá: " + rs.getDouble("bid_amount"));
+                list.add(new BidTransaction(
+                    rs.getString("id"),
+                    rs.getString("auction_id"),
+                    rs.getString("bidder_id"),
+                    rs.getDouble("bid_amount")
+                ));
             }
         }
+        return list;
     }
 }
