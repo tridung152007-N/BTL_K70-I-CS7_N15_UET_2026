@@ -1,0 +1,309 @@
+/* ============================================
+   AUCTION APP - GLOBAL STYLES
+   ============================================ */
+
+/* Root variables */
+:root {
+    -fx-primary: #667eea;
+    -fx-primary-dark: #764ba2;
+    -fx-success: #27ae60;
+    -fx-danger: #e74c3c;
+    -fx-warning: #f39c12;
+    -fx-info: #3498db;
+    -fx-light-bg: #f5f7fa;
+    -fx-text-primary: #333333;
+    -fx-text-secondary: #999999;
+    -fx-border-color: #e0e0e0;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.button {
+    -fx-font-size: 12;
+    -fx-padding: 8 15;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-font-family: 'Segoe UI', 'Arial';
+}
+
+.button:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.button-primary {
+    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button-primary:hover {
+    -fx-background-color: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+}
+
+.button-success {
+    -fx-background-color: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button-success:hover {
+    -fx-background-color: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+}
+
+.button-danger {
+    -fx-background-color: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button-danger:hover {
+    -fx-background-color: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+}
+
+.button-outline {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+    -fx-text-fill: #333;
+}
+
+.button-outline:hover {
+    -fx-background-color: #f9f9f9;
+}
+
+/* ============================================
+   TEXT FIELDS & INPUT
+   ============================================ */
+
+.text-field,
+.password-field,
+.combo-box {
+    -fx-font-size: 13;
+    -fx-padding: 10;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+    -fx-background-color: #f9f9f9;
+    -fx-font-family: 'Segoe UI', 'Arial';
+}
+
+.text-field:focused,
+.password-field:focused,
+.combo-box:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: white;
+}
+
+/* ============================================
+   LABELS
+   ============================================ */
+
+.label {
+    -fx-text-fill: #333;
+    -fx-font-family: 'Segoe UI', 'Arial';
+}
+
+.label-primary {
+    -fx-text-fill: #667eea;
+    -fx-font-weight: bold;
+}
+
+.label-secondary {
+    -fx-text-fill: #999;
+    -fx-font-size: 12;
+}
+
+.label-success {
+    -fx-text-fill: #27ae60;
+}
+
+.label-danger {
+    -fx-text-fill: #e74c3c;
+}
+
+.label-warning {
+    -fx-text-fill: #f39c12;
+}
+
+.title-large {
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.title-medium {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.title-small {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.card {
+    -fx-background-color: white;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.card-hover {
+    -fx-cursor: hand;
+}
+
+.card-hover:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 3);
+}
+
+/* ============================================
+   GRADIENTS
+   ============================================ */
+
+.gradient-primary {
+    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-success {
+    -fx-background-color: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.gradient-danger {
+    -fx-background-color: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+/* ============================================
+   SEPARATORS
+   ============================================ */
+
+.separator {
+    -fx-background-color: #e0e0e0;
+}
+
+/* ============================================
+   TABLE VIEWS
+   ============================================ */
+
+.table-view {
+    -fx-font-size: 12;
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f5f7fa;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.table-view .table-row-cell {
+    -fx-padding: 8;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f9f9f9;
+}
+
+/* ============================================
+   SCROLLBARS
+   ============================================ */
+
+.scroll-bar {
+    -fx-font-size: 10;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button,
+.scroll-bar:horizontal .increment-button,
+.scroll-bar:horizontal .decrement-button {
+    -fx-padding: 0;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #ccc;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #999;
+}
+
+/* ============================================
+   CONTEXT MENUS
+   ============================================ */
+
+.context-menu {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+}
+
+.menu-item {
+    -fx-padding: 8 15;
+}
+
+.menu-item:focused {
+    -fx-background-color: #f0f0f0;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes slideIn {
+    from {
+        -fx-translate-x: -50;
+        -fx-opacity: 0;
+    }
+    to {
+        -fx-translate-x: 0;
+        -fx-opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        -fx-opacity: 0;
+    }
+    to {
+        -fx-opacity: 1;
+    }
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+.spacing-xs { -fx-padding: 5; }
+.spacing-sm { -fx-padding: 10; }
+.spacing-md { -fx-padding: 15; }
+.spacing-lg { -fx-padding: 20; }
+.spacing-xl { -fx-padding: 30; }
+
+.text-center { -fx-text-alignment: center; }
+.text-left { -fx-text-alignment: left; }
+.text-right { -fx-text-alignment: right; }
+
+.text-bold { -fx-font-weight: bold; }
+.text-italic { -fx-font-style: italic; }
+
+.rounded-sm { -fx-border-radius: 3; -fx-background-radius: 3; }
+.rounded { -fx-border-radius: 5; -fx-background-radius: 5; }
+.rounded-lg { -fx-border-radius: 10; -fx-background-radius: 10; }
+.rounded-full { -fx-border-radius: 999; -fx-background-radius: 999; }
