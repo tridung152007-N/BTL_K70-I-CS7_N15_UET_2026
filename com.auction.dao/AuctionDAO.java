@@ -2,6 +2,8 @@ package com.auction.dao;
 
 import com.auction.model.Auction;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuctionDAO {
 
@@ -11,7 +13,7 @@ public class AuctionDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, auction.getId());
             stmt.setString(2, auction.getItem().getId());
-            stmt.setTimestamp(3, Timestamp.valueOf(auction.getItem().getCreatedAt()));
+            stmt.setTimestamp(3, Timestamp.valueOf(auction.getStartTime())); // ✅ sửa lỗi
             stmt.setTimestamp(4, Timestamp.valueOf(auction.getEndTime()));
             stmt.setDouble(5, auction.getCurrentPrice());
             stmt.setString(6, auction.getStatus().toString());
@@ -30,15 +32,21 @@ public class AuctionDAO {
         }
     }
 
-    public void findById(String id) throws SQLException {
+    public Auction findById(String id) throws SQLException { // ✅ sửa lỗi: trả về Auction
         String sql = "SELECT * FROM auctions WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                System.out.println("Tìm thấy auction: " + rs.getString("id"));
+                return new Auction(
+                    rs.getString("id"),
+                    rs.getDouble("current_price"),
+                    rs.getTimestamp("start_time").toLocalDateTime(),
+                    rs.getTimestamp("end_time").toLocalDateTime()
+                );
             }
         }
+        return null;
     }
 }
