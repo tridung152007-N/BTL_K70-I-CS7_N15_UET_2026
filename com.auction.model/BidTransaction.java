@@ -24,5 +24,7 @@ public class BidTransaction extends Entity {
 
     // Getters để lấy dữ liệu vẽ biểu đồ [cite: 102]
     public double getBidAmount() { return bidAmount; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public LocalDateTime getTimestamp() { return timestamp;}
+    public String getAuctionId() { return auctionId; }
+    public String getBidderId() { return bidderId; }
 }
