@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.auction.client.controller.BidRoomController">
+    <top>
+        <HBox spacing="16" style="-fx-padding: 12;">
+            <Label fx:id="itemNameLabel" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+            <Label text="Giá hiện tại:"/>
+            <Label fx:id="currentPriceLabel" style="-fx-font-size: 18; -fx-text-fill: #e74c3c;"/>
+            <Label fx:id="timerLabel" style="-fx-font-size: 14;"/>
+        </HBox>
+    </top>
+    <center>
+        <fx:define><fx:reference source="chartPlaceholder"/></fx:define>
+        <StackPane fx:id="chartContainer"/>
+    </center>
+    <bottom>
+        <VBox spacing="8" style="-fx-padding: 12;">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <TextField fx:id="bidAmountField" promptText="Nhập giá đấu"/>
+                <Button fx:id="bidBtn" text="Đặt giá" onAction="#handleBid"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+            </HBox>
+            <TitledPane text="Auto-Bidding" collapsible="true" expanded="false">
+                <HBox spacing="8">
+                    <TextField fx:id="maxBidField" promptText="Giá tối đa"/>
+                    <TextField fx:id="incrementField" promptText="Bước giá"/>
+                    <Button text="Bật Auto-Bid" onAction="#handleAutoBid"/>
+                </HBox>
+            </TitledPane>
+        </VBox>
+    </bottom>
+</BorderPane>
