@@ -12,7 +12,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AuctionServiceTest {
+public class AuctionServiceTest {
 
     // DAO giả (in-memory) để test không cần database
     private InMemoryAuctionDAO auctionDAO;
@@ -69,7 +69,7 @@ class AuctionServiceTest {
     }
 
     // ── In-memory DAO dùng cho test (không cần MySQL) ──────
-    static class InMemoryAuctionDAO implements com.auction.server.dao.AuctionDAO {
+    public static class InMemoryAuctionDAO implements com.auction.server.dao.AuctionDAO {
         private final Map<String, Auction> store = new HashMap<>();
 
         @Override public void save(Auction a) { store.put(a.getId(), a); }

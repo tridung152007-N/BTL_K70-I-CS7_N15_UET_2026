@@ -10,9 +10,9 @@ import java.sql.SQLException;
  */
 public class DBConfig {
 
-    private static final String URL      = "jdbc:mysql://localhost:3306/auction_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8";
+    private static final String URL      = "jdbc:mysql://localhost:3306/auction_db";
     private static final String USER     = "root";       // ← đổi thành user MySQL của bạn
-    private static final String PASSWORD = "123456";     // ← đổi thành password MySQL của bạn
+    private static final String PASSWORD = "12345";     // ← đổi thành password MySQL của bạn
 
     private static Connection connection;
 

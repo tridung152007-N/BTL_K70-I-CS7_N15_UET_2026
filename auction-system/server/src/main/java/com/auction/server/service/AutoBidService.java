@@ -5,7 +5,7 @@ import com.auction.server.model.BidTransaction;
 import com.auction.server.observer.AuctionObserver;
 
 import java.util.*;
-import java.util.concurrent.PriorityQueue;
+import java.util.PriorityQueue;
 
 /**
  * Xử lý Auto-Bidding – ưu tiên theo thời gian đăng ký (FIFO).
