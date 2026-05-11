@@ -20,6 +20,8 @@ public class LoginController {
     @FXML private Label errorLabel;
 
     private final AuctionClientService service = new AuctionClientService();
+    // FIX Bug 4: flag để chỉ xử lý response ngay sau khi gửi login
+    private volatile boolean waitingForLoginResponse = false;
 
     @FXML
     public void initialize() {
@@ -38,13 +40,19 @@ public class LoginController {
         }
         errorLabel.setText("Đang đăng nhập...");
         // Gửi mật khẩu dạng plain (nên hash BCrypt ở production)
+        waitingForLoginResponse = true;
         service.login(username, password);
     }
 
     private void onMessage(Message msg) {
+        // FIX Bug 4: chỉ xử lý khi đang chờ phản hồi login
+        if (!waitingForLoginResponse) return;
         if (msg.getType() == MessageType.SUCCESS) {
+            waitingForLoginResponse = false;
+            SocketClient.getInstance().removeListener(this::onMessage);
             Platform.runLater(this::goToAuctionList);
         } else if (msg.getType() == MessageType.ERROR) {
+            waitingForLoginResponse = false;
             String err = JsonUtil.fromJson(msg.getPayload(), ErrorPayload.class).error();
             Platform.runLater(() -> errorLabel.setText(err));
         }

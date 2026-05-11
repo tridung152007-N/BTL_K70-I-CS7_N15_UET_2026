@@ -15,7 +15,8 @@ public class AutoBidClientService {
     }
 
     public void cancelAutoBid(String auctionId, String bidderId) {
+        // FIX Bug 3: thêm bidderId vào payload để server hủy đúng config
         socketClient.send(new Message(MessageType.AUTO_BID_CANCEL, bidderId,
-                "{\"auctionId\":\"" + auctionId + "\"}"));
+                "{\"auctionId\":\"" + auctionId + "\",\"bidderId\":\"" + bidderId + "\"}"));
     }
 }
