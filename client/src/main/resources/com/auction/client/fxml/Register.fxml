@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.RegisterController"
+      alignment="CENTER" spacing="15"
+      prefWidth="420" prefHeight="520"
+      style="-fx-padding: 40; -fx-background-color: #f8f9fa;">
+
+    <Label text="Đăng ký tài khoản"
+           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <TextField fx:id="usernameField" promptText="Tên đăng nhập" prefHeight="45"/>
+    <PasswordField fx:id="passwordField" promptText="Mật khẩu" prefHeight="45"/>
+    <PasswordField fx:id="confirmPasswordField" promptText="Nhập lại mật khẩu" prefHeight="45"/>
+    <TextField fx:id="emailField" promptText="Email" prefHeight="45"/>
+
+    <!-- ComboBox không khai báo items trong FXML nữa -->
+    <ComboBox fx:id="roleBox" promptText="Chọn vai trò" value="BIDDER" prefHeight="45"/>
+
+    <TextField fx:id="shopNameField"
+               promptText="Tên cửa hàng (chỉ Seller)"
+               visible="false" managed="false" prefHeight="45"/>
+
+    <Button text="Đăng ký"
+            onAction="#handleRegister"
+            prefHeight="50" prefWidth="300"
+            style="-fx-font-size: 16px; -fx-background-color: #27ae60; -fx-text-fill: white;"/>
+
+    <Hyperlink text="Quay lại Đăng nhập"
+               onAction="#goBackToLogin"
+               style="-fx-font-size: 14px;"/>
+
+    <Label fx:id="statusLabel"
+           style="-fx-text-fill: #e74c3c; -fx-font-size: 14px; -fx-wrap-text: true;"/>
+
+</VBox>

@@ -1,0 +1,3 @@
+com\auction\server\concurrency\ConcurrentBidTest.class
+com\auction\server\service\AuctionServiceTest$InMemoryAuctionDAO.class
+com\auction\server\service\AuctionServiceTest.class

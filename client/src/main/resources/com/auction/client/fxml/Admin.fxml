@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.auction.client.controller.AdminController">
+
+    <top>
+        <HBox spacing="15" style="-fx-padding: 12; -fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <Label text="Quản trị - Duyệt sản phẩm"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Button text="🔄 Làm mới" onAction="#handleRefresh"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <fx:include source="/com/auction/client/fxml/ProfileMenu.fxml"/>
+        </HBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.65">
+            <!-- Bảng bên trái -->
+            <TableView fx:id="itemTable" style="-fx-padding: 10;">
+                <columns>
+                    <TableColumn fx:id="colName" text="Tên sản phẩm" prefWidth="250"/>
+                    <TableColumn fx:id="colCategory" text="Loại" prefWidth="120"/>
+                    <TableColumn fx:id="colSeller" text="Người bán" prefWidth="120"/>
+                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100"/>
+                </columns>
+            </TableView>
+
+            <!-- Chi tiết bên phải -->
+            <VBox spacing="10" style="-fx-padding: 15;">
+                <Label text="Chi tiết sản phẩm" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <TextArea fx:id="detailArea" editable="false" prefHeight="300" wrapText="true"/>
+
+                <HBox spacing="15" alignment="CENTER">
+                    <Button fx:id="btnApprove" text="✅ Duyệt"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px;"
+                            onAction="#handleApprove" prefWidth="120"/>
+                    <Button fx:id="btnReject" text="❌ Từ chối"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px;"
+                            onAction="#handleReject" prefWidth="120"/>
+                </HBox>
+            </VBox>
+        </SplitPane>
+    </center>
+
+    <bottom>
+        <Label fx:id="statusLabel" style="-fx-padding: 8; -fx-font-size: 14px;"/>
+    </bottom>
+</BorderPane>
