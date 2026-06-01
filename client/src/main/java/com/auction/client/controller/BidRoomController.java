@@ -8,26 +8,22 @@ import com.auction.common.network.Message;
 import com.auction.common.network.MessageType;
 import com.auction.common.util.JsonUtil;
 import com.auction.server.model.BidTransaction;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class BidRoomController {
 
@@ -47,34 +43,46 @@ public class BidRoomController {
 
     private final AuctionClientService auctionService = new AuctionClientService();
     private final AutoBidClientService autoBidService = new AutoBidClientService();
-    private final BidHistoryChart bidHistoryChart = new BidHistoryChart();
+    private final BidHistoryChart bidHistoryChart;
 
     private String auctionId;
     private String currentUserId;
     private String itemName;
     private LocalDateTime endTime;
-    private Timeline countdownTimer;
-    private boolean isEnded = false;
+    private ScheduledExecutorService countdownExecutor;
+    private volatile boolean isActive = true;
+    private volatile boolean isEnded = false;
+
+    private long lastUpdateTime = 0;
+    private static final long UPDATE_THROTTLE_MS = 800;
+
+    public BidRoomController() {
+        this.bidHistoryChart = new BidHistoryChart();
+    }
 
     @FXML
     public void initialize() {
-        System.out.println("🔧 BidRoomController initialize() called");
+        setupChart();
+        setupTable();
+        SocketClient.getInstance().addListener(this::onMessage);
+    }
 
+    private void setupChart() {
         if (chartContainer != null) {
             chartContainer.getChildren().clear();
             chartContainer.getChildren().add(bidHistoryChart.getChart());
         }
+    }
 
-        // Setup bảng lịch sử
+    private void setupTable() {
         if (bidHistoryTable != null) {
             colBidder.setCellValueFactory(new PropertyValueFactory<>("bidderId"));
             colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-            colTime.setCellValueFactory(new PropertyValueFactory<>("createdAt")); // có thể format sau
+            colTime.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
             bidHistoryTable.setItems(bidList);
         }
-
-        SocketClient.getInstance().addListener(this::onMessage);
     }
+
     public void setAuction(String auctionId, String itemName, LocalDateTime endTime) {
         this.auctionId = auctionId;
         this.itemName = itemName != null && !itemName.isEmpty() ? itemName : "Phiên #" + auctionId;
@@ -83,77 +91,114 @@ public class BidRoomController {
         if (itemNameLabel != null) {
             itemNameLabel.setText(this.itemName);
         }
+
         if (endTime != null) {
             startCountdown();
         }
-        System.out.println("✅ setAuction() hoàn tất cho auction: " + auctionId);
     }
 
     public void setCurrentUserId(String userId) {
         this.currentUserId = userId;
-        System.out.println("👤 Current User ID: " + userId);
+        // Không gọi setCurrentUserId trên chart nữa vì class chart chưa hỗ trợ
     }
 
     private void startCountdown() {
-        if (countdownTimer != null) countdownTimer.stop();
+        if (countdownExecutor != null) return;
 
-        countdownTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateCountdown()));
-        countdownTimer.setCycleCount(Timeline.INDEFINITE);
-        countdownTimer.play();
+        countdownExecutor = Executors.newSingleThreadScheduledExecutor();
+        countdownExecutor.scheduleAtFixedRate(this::updateCountdown, 0, 1, TimeUnit.SECONDS);
     }
 
     private void updateCountdown() {
-        if (endTime == null || isEnded) return;
+        if (!isActive || endTime == null || isEnded) return;
 
-        LocalDateTime now = LocalDateTime.now();
-        long secondsLeft = ChronoUnit.SECONDS.between(now, endTime);
+        Platform.runLater(() -> {
+            long secondsLeft = ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime);
 
-        if (secondsLeft <= 0) {
-            auctionEnded();
-            return;
-        }
+            if (secondsLeft <= 0) {
+                auctionEnded();
+                return;
+            }
 
-        long hours = secondsLeft / 3600;
-        long minutes = (secondsLeft % 3600) / 60;
-        long seconds = secondsLeft % 60;
+            long hours = secondsLeft / 3600;
+            long minutes = (secondsLeft % 3600) / 60;
+            long seconds = secondsLeft % 60;
 
-        String timeStr = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        timerLabel.setText("⏱ " + timeStr + " còn lại");
+            String timeStr = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            timerLabel.setText("⏱ " + timeStr + " còn lại");
 
-        if (secondsLeft <= 60) {
-            timerLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
-        } else if (secondsLeft <= 300) {
-            timerLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: bold;");
-        } else {
-            timerLabel.setStyle("-fx-text-fill: #27ae60;");
-        }
+            if (secondsLeft <= 60) {
+                timerLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+            } else if (secondsLeft <= 300) {
+                timerLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: bold;");
+            } else {
+                timerLabel.setStyle("-fx-text-fill: #27ae60;");
+            }
+        });
     }
 
     private void auctionEnded() {
         isEnded = true;
-        if (countdownTimer != null) countdownTimer.stop();
+        cleanupTimer();
 
-        timerLabel.setText("✅ Phiên đã kết thúc!");
-        timerLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+        Platform.runLater(() -> {
+            timerLabel.setText("✅ Phiên đã kết thúc!");
+            timerLabel.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
 
-        if (bidAmountField != null) bidAmountField.setDisable(true);
-        if (maxBidField != null) maxBidField.setDisable(true);
-        if (incrementField != null) incrementField.setDisable(true);
+            if (bidAmountField != null) bidAmountField.setDisable(true);
+            if (maxBidField != null) maxBidField.setDisable(true);
+            if (incrementField != null) incrementField.setDisable(true);
+        });
+    }
 
-        showAlert("Thông báo", "Phiên đấu giá đã kết thúc!");
+    private void onMessage(Message msg) {
+        if (!isActive || auctionId == null) return;
+        if (!msg.getPayload().contains(auctionId)) return;
+
+        if (msg.getType() == MessageType.BID_UPDATE || msg.getType() == MessageType.SUCCESS) {
+            handleBidUpdate(msg);
+        }
+    }
+
+    private void handleBidUpdate(Message msg) {
+        long now = System.currentTimeMillis();
+        if (now - lastUpdateTime < UPDATE_THROTTLE_MS) return;
+        lastUpdateTime = now;
+
+        Platform.runLater(() -> {
+            try {
+                BidTransaction bid = JsonUtil.fromJson(msg.getPayload(), BidTransaction.class);
+                if (bid == null) return;
+
+                if (currentPriceLabel != null) {
+                    currentPriceLabel.setText(String.format("%,.0f VNĐ", bid.getAmount()));
+                }
+
+                bidHistoryChart.addBidPoint(bid);
+                updateBidTable(bid);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void updateBidTable(BidTransaction bid) {
+        bidList.add(0, bid);
+        if (bidList.size() > 25) {
+            bidList.remove(bidList.size() - 1);
+        }
     }
 
     @FXML
     public void handleBid() {
-        if (isEnded) return;
+        if (isEnded || auctionId == null) return;
         try {
             double amount = Double.parseDouble(bidAmountField.getText().trim());
-            if (amount <= 0) {
-                showAlert("Lỗi", "Số tiền phải lớn hơn 0.");
-                return;
+            if (amount > 0) {
+                auctionService.placeBid(auctionId, currentUserId, amount);
+                bidAmountField.clear();
             }
-            auctionService.placeBid(auctionId, currentUserId, amount);
-            bidAmountField.clear();
         } catch (Exception e) {
             showAlert("Lỗi", "Số tiền không hợp lệ.");
         }
@@ -165,61 +210,18 @@ public class BidRoomController {
         try {
             double maxBid = Double.parseDouble(maxBidField.getText().trim());
             double increment = Double.parseDouble(incrementField.getText().trim());
-
-            if (maxBid <= 0 || increment <= 0) {
-                showAlert("Lỗi", "Giá tối đa và bước giá phải lớn hơn 0.");
-                return;
+            if (maxBid > 0 && increment > 0) {
+                autoBidService.registerAutoBid(auctionId, currentUserId, maxBid, increment);
+                showAlert("Thành công", "Đã đăng ký Auto Bid!");
             }
-
-            autoBidService.registerAutoBid(auctionId, currentUserId, maxBid, increment);
-            showAlert("Thành công", "Đã đăng ký Auto Bid thành công!");
         } catch (Exception e) {
             showAlert("Lỗi", "Vui lòng nhập số hợp lệ.");
         }
     }
 
-    private void onMessage(Message msg) {
-        Platform.runLater(() -> {
-            if (msg.getType() == MessageType.BID_UPDATE || msg.getType() == MessageType.SUCCESS) {
-                try {
-                    BidTransaction bid = JsonUtil.fromJson(msg.getPayload(), BidTransaction.class);
-                    if (bid != null) {
-                        // Cập nhật giá
-                        if (currentPriceLabel != null) {
-                            currentPriceLabel.setText(String.format("%,.0f VNĐ", bid.getAmount()));
-                        }
-
-                        // Thêm vào biểu đồ
-                        bidHistoryChart.addBidPoint(bid);
-
-                        // Thêm vào bảng
-                        bidList.add(0, bid); // thêm lên đầu
-                        if (bidList.size() > 20) bidList.remove(bidList.size() - 1);
-
-                        // Thông báo
-                        System.out.println("🔔 " + bid.getBidderId() + " vừa bid " + String.format("%,.0f VNĐ", bid.getAmount()));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
     @FXML
     public void goBack() {
-        if (countdownTimer != null) {
-            countdownTimer.stop();
-        }
-        bidHistoryChart.clear();
-
+        cleanup();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/auction/client/fxml/AuctionDashboard.fxml"));
             Stage stage = (Stage) itemNameLabel.getScene().getWindow();
@@ -231,5 +233,27 @@ public class BidRoomController {
         }
     }
 
-    private record ErrorPayload(String error) {}
+    private void cleanup() {
+        isActive = false;
+        cleanupTimer();
+        SocketClient.getInstance().removeListener(this::onMessage);
+        if (bidHistoryChart != null) {
+            bidHistoryChart.clear();
+        }
+    }
+
+    private void cleanupTimer() {
+        if (countdownExecutor != null) {
+            countdownExecutor.shutdownNow();
+            countdownExecutor = null;
+        }
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

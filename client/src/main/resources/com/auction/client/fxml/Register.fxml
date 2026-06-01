@@ -3,39 +3,54 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.auction.client.controller.RegisterController"
-      alignment="CENTER" spacing="15"
-      prefWidth="420" prefHeight="520"
-      style="-fx-padding: 40; -fx-background-color: #f8f9fa;">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.auction.client.controller.RegisterController"
+           style="-fx-background-color: #f0f2f5;">
 
-    <Label text="Đăng ký tài khoản"
-           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    <VBox alignment="CENTER" spacing="0"
+          style="-fx-background-color: white;
+                 -fx-background-radius: 18;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 24, 0, 0, 6);
+                 -fx-padding: 36 48 32 48;"
+          maxWidth="440"
+          StackPane.alignment="CENTER">
 
-    <TextField fx:id="usernameField" promptText="Tên đăng nhập" prefHeight="45"/>
-    <PasswordField fx:id="passwordField" promptText="Mật khẩu" prefHeight="45"/>
-    <PasswordField fx:id="confirmPasswordField" promptText="Nhập lại mật khẩu" prefHeight="45"/>
-    <TextField fx:id="emailField" promptText="Email" prefHeight="45"/>
+        <!-- Header -->
+        <VBox alignment="CENTER" spacing="5" style="-fx-padding: 0 0 22 0;">
+            <Label text="Tạo tài khoản"
+                   style="-fx-font-size: 25px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label text="Tham gia đấu giá ngay hôm nay"
+                   style="-fx-font-size: 13px; -fx-text-fill: #94a3b8;"/>
+        </VBox>
 
-    <!-- ComboBox không khai báo items trong FXML nữa -->
-    <ComboBox fx:id="roleBox" promptText="Chọn vai trò" value="BIDDER" prefHeight="45"/>
+        <!-- Fields -->
+        <VBox spacing="12" style="-fx-padding: 0 0 18 0;">
+            <TextField fx:id="usernameField" promptText="Tên đăng nhập" prefHeight="42"/>
+            <PasswordField fx:id="passwordField" promptText="Mật khẩu" prefHeight="42"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Xác nhận mật khẩu" prefHeight="42"/>
+            <TextField fx:id="emailField" promptText="Email" prefHeight="42"/>
+            <ComboBox fx:id="roleBox" promptText="Chọn vai trò" value="BIDDER"
+                      prefHeight="42" maxWidth="1.7976931348623157E308"/>
+            <TextField fx:id="shopNameField" promptText="Tên cửa hàng (chỉ Seller)"
+                       visible="false" managed="false" prefHeight="42"/>
+        </VBox>
 
-    <TextField fx:id="shopNameField"
-               promptText="Tên cửa hàng (chỉ Seller)"
-               visible="false" managed="false" prefHeight="45"/>
+        <Button text="Đăng ký" onAction="#handleRegister"
+                prefHeight="44" maxWidth="1.7976931348623157E308"
+                style="-fx-background-color: #16a34a; -fx-text-fill: white;
+                       -fx-font-size: 14.5px; -fx-font-weight: bold;
+                       -fx-background-radius: 10; -fx-cursor: hand;"/>
 
-    <Button text="Đăng ký"
-            onAction="#handleRegister"
-            prefHeight="50" prefWidth="300"
-            style="-fx-font-size: 16px; -fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <HBox alignment="CENTER" style="-fx-padding: 12 0 0 0;">
+            <Hyperlink text="Quay lại Đăng nhập" onAction="#goBackToLogin"
+                       style="-fx-font-size: 13px; -fx-text-fill: #2563eb; -fx-border-color: transparent;"/>
+        </HBox>
 
-    <Hyperlink text="Quay lại Đăng nhập"
-               onAction="#goBackToLogin"
-               style="-fx-font-size: 14px;"/>
-
-    <Label fx:id="statusLabel"
-           style="-fx-text-fill: #e74c3c; -fx-font-size: 14px; -fx-wrap-text: true;"/>
-
-</VBox>
+        <Label fx:id="statusLabel"
+               style="-fx-text-fill: #dc2626; -fx-font-size: 13px; -fx-wrap-text: true;"
+               maxWidth="344"/>
+    </VBox>
+</StackPane>

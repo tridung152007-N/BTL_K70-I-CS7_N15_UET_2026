@@ -5,49 +5,75 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.auction.client.controller.AdminController">
+            fx:controller="com.auction.client.controller.AdminController"
+            style="-fx-background-color: #f0f2f5;">
 
     <top>
-        <HBox spacing="15" style="-fx-padding: 12; -fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
-            <Label text="Quản trị - Duyệt sản phẩm"
-                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-            <Button text="🔄 Làm mới" onAction="#handleRefresh"
-                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <HBox spacing="16" alignment="CENTER_LEFT"
+              style="-fx-padding: 14 22; -fx-background-color: white;
+                     -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
+            <Label text="🛡  Quản trị — Duyệt sản phẩm"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Button text="⟳ Làm mới" onAction="#handleRefresh"
+                    style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb;
+                           -fx-font-weight: bold; -fx-background-radius: 8;
+                           -fx-border-color: #bfdbfe; -fx-border-width: 1;
+                           -fx-border-radius: 8; -fx-cursor: hand;"/>
             <HBox HBox.hgrow="ALWAYS"/>
             <fx:include source="/com/auction/client/fxml/ProfileMenu.fxml"/>
         </HBox>
     </top>
 
     <center>
-        <SplitPane dividerPositions="0.65">
-            <!-- Bảng bên trái -->
-            <TableView fx:id="itemTable" style="-fx-padding: 10;">
-                <columns>
-                    <TableColumn fx:id="colName" text="Tên sản phẩm" prefWidth="250"/>
-                    <TableColumn fx:id="colCategory" text="Loại" prefWidth="120"/>
-                    <TableColumn fx:id="colSeller" text="Người bán" prefWidth="120"/>
-                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100"/>
-                </columns>
-            </TableView>
+        <SplitPane dividerPositions="0.65" style="-fx-padding: 16; -fx-background-color: #f0f2f5;">
 
-            <!-- Chi tiết bên phải -->
-            <VBox spacing="10" style="-fx-padding: 15;">
-                <Label text="Chi tiết sản phẩm" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <TextArea fx:id="detailArea" editable="false" prefHeight="300" wrapText="true"/>
+            <!-- Left: Table -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                          -fx-padding: 14; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3);">
+                <TableView fx:id="itemTable"
+                           style="-fx-background-radius: 9; -fx-border-color: #e5e7eb; -fx-border-radius: 9;"
+                           VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colName" text="Tên sản phẩm" prefWidth="250"/>
+                        <TableColumn fx:id="colCategory" text="Loại" prefWidth="120"/>
+                        <TableColumn fx:id="colSeller" text="Người bán" prefWidth="120"/>
+                        <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
 
-                <HBox spacing="15" alignment="CENTER">
-                    <Button fx:id="btnApprove" text="✅ Duyệt"
-                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px;"
-                            onAction="#handleApprove" prefWidth="120"/>
-                    <Button fx:id="btnReject" text="❌ Từ chối"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px;"
-                            onAction="#handleReject" prefWidth="120"/>
+            <!-- Right: Detail -->
+            <VBox spacing="14" style="-fx-background-color: white; -fx-background-radius: 12;
+                                       -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 3);">
+                <Label text="Chi tiết sản phẩm"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                <TextArea fx:id="detailArea" editable="false" prefHeight="320" wrapText="true"
+                          style="-fx-background-color: #f8fafc; -fx-background-radius: 9;
+                                 -fx-border-color: #e5e7eb; -fx-border-width: 1; -fx-border-radius: 9;
+                                 -fx-font-size: 13.5px;"/>
+
+                <HBox spacing="14" alignment="CENTER">
+                    <Button fx:id="btnApprove" text="✅  Duyệt"
+                            style="-fx-background-color: #16a34a; -fx-text-fill: white;
+                                   -fx-font-size: 14px; -fx-font-weight: bold;
+                                   -fx-background-radius: 9; -fx-cursor: hand;
+                                   -fx-padding: 10 28;"
+                            onAction="#handleApprove" prefWidth="130"/>
+                    <Button fx:id="btnReject" text="❌  Từ chối"
+                            style="-fx-background-color: #dc2626; -fx-text-fill: white;
+                                   -fx-font-size: 14px; -fx-font-weight: bold;
+                                   -fx-background-radius: 9; -fx-cursor: hand;
+                                   -fx-padding: 10 28;"
+                            onAction="#handleReject" prefWidth="130"/>
                 </HBox>
             </VBox>
         </SplitPane>
     </center>
 
     <bottom>
-        <Label fx:id="statusLabel" style="-fx-padding: 8; -fx-font-size: 14px;"/>
+        <Label fx:id="statusLabel"
+               style="-fx-padding: 10 22; -fx-font-size: 13px; -fx-background-color: white;
+                      -fx-border-color: #e5e7eb; -fx-border-width: 1 0 0 0;"/>
     </bottom>
 </BorderPane>

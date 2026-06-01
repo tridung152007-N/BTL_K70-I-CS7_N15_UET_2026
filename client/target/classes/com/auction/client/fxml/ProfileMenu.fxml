@@ -8,18 +8,19 @@
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.auction.client.controller.ProfileController"
-      alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 5 10;">
+      alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 3 8;">
 
     <MenuButton fx:id="profileMenuButton" styleClass="profile-menu-button">
         <graphic>
-            <Circle fx:id="avatarCircle" radius="22" fill="#3498db" stroke="#ffffff" strokeWidth="3"/>
+            <Circle fx:id="avatarCircle" radius="20"
+                    style="-fx-fill: #2563eb; -fx-stroke: white; -fx-stroke-width: 2.5;"/>
         </graphic>
-
         <items>
-            <MenuItem text="👤 Thông tin cá nhân"   onAction="#showProfileInfo"/>
-            <MenuItem text="📜 Nhật ký hoạt động" onAction="#showActivityLog"/>
+            <MenuItem text="👤  Thông tin cá nhân"  onAction="#showProfileInfo"/>
+            <MenuItem text="📜  Nhật ký hoạt động" onAction="#showActivityLog"/>
             <SeparatorMenuItem/>
-            <MenuItem text="🚪 Đăng xuất"         onAction="#logout" style="-fx-text-fill: #e74c3c;"/>
+            <MenuItem text="🚪  Đăng xuất" onAction="#logout"
+                      style="-fx-text-fill: #dc2626;"/>
         </items>
     </MenuButton>
 </HBox>

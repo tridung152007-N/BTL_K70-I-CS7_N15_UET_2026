@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.event.ActionEvent;
 
 import java.io.IOException;
 
@@ -31,7 +32,7 @@ public class LoginController {
         errorLabel.setText("");
         passwordField.setOnKeyPressed(event -> {
             if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                handleLogin();
+                handleLogin(null);
             }
         });
         usernameField.setOnKeyPressed(event -> {
@@ -42,7 +43,8 @@ public class LoginController {
     }
 
     @FXML
-    public void handleLogin() {
+    public void handleLogin(ActionEvent event) {
+
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
 

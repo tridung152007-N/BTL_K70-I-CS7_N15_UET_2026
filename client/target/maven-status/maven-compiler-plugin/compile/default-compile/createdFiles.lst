@@ -15,7 +15,6 @@ com\auction\client\network\SocketClient.class
 com\auction\client\network\MessageListener.class
 com\auction\client\controller\AdminController.class
 com\auction\client\controller\AdminController$ErrPayload.class
-com\auction\client\controller\BidRoomController$ErrorPayload.class
 com\auction\client\controller\SellerController.class
 com\auction\client\session\UserSession.class
 com\auction\client\service\AutoBidClientService.class

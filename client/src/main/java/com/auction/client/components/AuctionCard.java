@@ -2,6 +2,7 @@ package com.auction.client.components;
 
 import com.auction.server.model.Auction;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -18,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 
 public class AuctionCard extends VBox {
 
+    @FXML
     private Label priceLabel;
     private Label timeLabel;
     private final Auction auction;

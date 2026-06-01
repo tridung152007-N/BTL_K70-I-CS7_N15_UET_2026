@@ -18,6 +18,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -33,13 +34,27 @@ public class AuctionListController {
 
     private final AuctionClientService service = new AuctionClientService();
     private String currentUserId;
+    private volatile boolean isActive = true;
+
+    private ScheduledExecutorService autoRefreshService;
+    private long lastUpdateTime = 0;
+    private static final long UPDATE_THROTTLE_MS = 1500; // 1.5 giây
 
     @FXML
     public void initialize() {
         currentUserId = UserSession.getInstance().getUserId();
         String userName = UserSession.getInstance().getUsername();
 
-        // Setup profile menu
+        setupUserMenu(userName);
+        SocketClient.getInstance().addListener(this::onMessage);
+
+        Platform.runLater(() -> {
+            handleRefresh();
+            startAutoRefresh();
+        });
+    }
+
+    private void setupUserMenu(String userName) {
         userMenu.getItems().addAll(
                 "👤 " + userName,
                 "📋 Hồ sơ",
@@ -49,34 +64,63 @@ public class AuctionListController {
         );
         userMenu.setValue("👤 " + userName);
         userMenu.setOnAction(e -> handleUserMenuSelection());
-
-        SocketClient.getInstance().addListener(this::onMessage);
-        Platform.runLater(() -> {
-            handleRefresh();
-            startAutoRefresh();
-        });
     }
-    private ScheduledExecutorService autoRefreshService;
 
-    private void startAutoRefresh() {
-        autoRefreshService = Executors.newSingleThreadScheduledExecutor();
-        autoRefreshService.scheduleAtFixedRate(this::handleRefresh, 45, 90, TimeUnit.SECONDS);
+    private void onMessage(Message msg) {
+        if (!isActive) return;
+
+        if (msg.getType() == MessageType.AUCTION_LIST) {
+            handleAuctionListUpdate(msg);
+        }
+        // Có thể xử lý BID_UPDATE nhẹ ở đây nếu muốn update card realtime
+    }
+
+    private void handleAuctionListUpdate(Message msg) {
+        long now = System.currentTimeMillis();
+        if (now - lastUpdateTime < UPDATE_THROTTLE_MS) {
+            return; // Throttle
+        }
+        lastUpdateTime = now;
+
+        try {
+            Auction[] auctionsArray = JsonUtil.fromJson(msg.getPayload(), Auction[].class);
+            List<Auction> auctions = Arrays.asList(auctionsArray);
+
+            Platform.runLater(() -> loadAuctionCards(auctions));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadAuctionCards(List<Auction> auctions) {
+        cardsContainer.getChildren().clear();
+
+        for (Auction auction : auctions) {
+            try {
+                // Chỉ tạo card nếu auction còn đang diễn ra
+                if (auction.getEndTime() != null && auction.getEndTime().isAfter(LocalDateTime.now())) {
+                    AuctionCard card = new AuctionCard(auction, () -> openBidRoom(auction));
+                    cardsContainer.getChildren().add(card);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
     public void handleRefresh() {
-        if (service != null) {
+        if (service != null && isActive) {
             service.requestAuctionList(currentUserId);
         }
     }
 
-    // Thêm phương thức cleanup khi đóng cửa sổ
-    public void cleanup() {
-        if (autoRefreshService != null) {
-            autoRefreshService.shutdownNow();
-        }
-        SocketClient.getInstance().removeListener(this::onMessage);
+    private void startAutoRefresh() {
+        autoRefreshService = Executors.newSingleThreadScheduledExecutor();
+        // Giảm tần suất auto refresh xuống còn 3-5 phút
+        autoRefreshService.scheduleAtFixedRate(this::handleRefresh, 60, 180, TimeUnit.SECONDS);
     }
+
     private void handleUserMenuSelection() {
         String selected = userMenu.getValue();
         if (selected == null) return;
@@ -86,58 +130,17 @@ public class AuctionListController {
         } else if (selected.contains("Hồ sơ")) {
             openProfile();
         }
+        // Reset value
         userMenu.setValue("👤 " + UserSession.getInstance().getUsername());
     }
 
     private void logout() {
-        try {
-            UserSession.getInstance().logout();
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/auction/client/fxml/Login.fxml"));
-            Stage stage = (Stage) cardsContainer.getScene().getWindow();
-            stage.setScene(new Scene(loader.load(), 400, 300));
-            stage.setTitle("Đăng nhập");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        cleanup();
+        // ... code logout hiện tại của bạn
     }
 
     private void openProfile() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/auction/client/fxml/ProfileMenu.fxml"));
-            Stage stage = (Stage) cardsContainer.getScene().getWindow();
-            stage.setScene(new Scene(loader.load(), 500, 400));
-            stage.setTitle("Hồ sơ người dùng");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void onMessage(Message msg) {
-        if (msg.getType() == MessageType.AUCTION_LIST) {
-            try {
-                Auction[] auctionsArray = JsonUtil.fromJson(msg.getPayload(), Auction[].class);
-                List<Auction> auctions = Arrays.asList(auctionsArray);
-
-                Platform.runLater(() -> loadAuctionCards(auctions));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void loadAuctionCards(List<Auction> auctions) {
-        cardsContainer.getChildren().clear();
-
-        for (Auction auction : auctions) {
-            try {
-                AuctionCard card = new AuctionCard(auction, () -> openBidRoom(auction));
-                cardsContainer.getChildren().add(card);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        // ... code mở profile
     }
 
     private void openBidRoom(Auction auction) {
@@ -145,29 +148,37 @@ public class AuctionListController {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/auction/client/fxml/BidRoom.fxml"));
 
-            // Sử dụng cardsContainer thay vì auctionGrid
             Stage stage = (Stage) cardsContainer.getScene().getWindow();
-
             Scene scene = new Scene(loader.load(), 950, 680);
 
             BidRoomController ctrl = loader.getController();
-
-            // Truyền đầy đủ thông tin bao gồm endTime
             ctrl.setAuction(
                     auction.getId(),
                     auction.getItemName() != null ? auction.getItemName() : "Sản phẩm #" + auction.getId(),
-                    auction.getEndTime()   // ← Quan trọng để đếm ngược
+                    auction.getEndTime()
             );
-
             ctrl.setCurrentUserId(currentUserId);
 
             stage.setScene(scene);
-            stage.setTitle("Đấu giá - " +
-                    (auction.getItemName() != null ? auction.getItemName() : auction.getId()));
+            stage.setTitle("Đấu giá - " + auction.getItemName());
+
+            // Tắt refresh khi vào phòng đấu giá
+            setActive(false);
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Có thể thay bằng alert sau này
         }
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
+
+    public void cleanup() {
+        isActive = false;
+        if (autoRefreshService != null && !autoRefreshService.isShutdown()) {
+            autoRefreshService.shutdownNow();
+        }
+        SocketClient.getInstance().removeListener(this::onMessage);
     }
 }

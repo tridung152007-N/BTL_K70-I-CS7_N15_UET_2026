@@ -3,28 +3,55 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.auction.client.controller.LoginController"
-      alignment="CENTER"
-      spacing="15"
-      prefWidth="420"
-      prefHeight="380">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.auction.client.controller.LoginController"
+           style="-fx-background-color: #f0f2f5;">
 
-    <padding>
-        <Insets top="30" right="30" bottom="30" left="30"/>
-    </padding>
+    <VBox alignment="CENTER" spacing="0"
+          style="-fx-background-color: white;
+                 -fx-background-radius: 18;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 24, 0, 0, 6);
+                 -fx-padding: 44 48 40 48;"
+          maxWidth="420" maxHeight="500"
+          StackPane.alignment="CENTER">
 
-    <Label text="Đăng nhập" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+        <!-- Header -->
+        <VBox alignment="CENTER" spacing="6" style="-fx-padding: 0 0 28 0;">
+            <Circle radius="28" style="-fx-fill: #2563eb;"/>
+            <Label text="Đăng nhập"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label text="Chào mừng bạn trở lại"
+                   style="-fx-font-size: 13px; -fx-text-fill: #94a3b8;"/>
+        </VBox>
 
-    <TextField fx:id="usernameField" promptText="Tên đăng nhập" prefWidth="320"/>
-    <PasswordField fx:id="passwordField" promptText="Mật khẩu" prefWidth="320"/>
+        <!-- Fields -->
+        <VBox spacing="14" style="-fx-padding: 0 0 20 0;">
+            <VBox spacing="5">
+                <Label text="Tên đăng nhập" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <TextField fx:id="usernameField" promptText="Nhập tên đăng nhập" prefHeight="42" prefWidth="324"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Mật khẩu" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu" prefHeight="42" prefWidth="324"/>
+            </VBox>
+        </VBox>
 
-    <Button text="Đăng nhập" onAction="#handleLogin" prefWidth="320" style="-fx-font-size: 15px;"/>
+        <Button text="Đăng nhập" onAction="#handleLogin"
+                prefWidth="324" prefHeight="44"
+                style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-font-size: 14.5px;
+                       -fx-background-radius: 10; -fx-cursor: hand;"/>
 
-    <Hyperlink text="Chưa có tài khoản? Đăng ký ngay" onAction="#goToRegister"/>
+        <HBox alignment="CENTER" style="-fx-padding: 14 0 0 0;">
+            <Hyperlink text="Chưa có tài khoản? Đăng ký ngay" onAction="#goToRegister"
+                       style="-fx-font-size: 13px; -fx-text-fill: #2563eb; -fx-border-color: transparent;"/>
+        </HBox>
 
-    <Label fx:id="errorLabel" text="" style="-fx-text-fill: red; -fx-font-size: 13px;"/>
-
-</VBox>
+        <Label fx:id="errorLabel" text=""
+               style="-fx-text-fill: #dc2626; -fx-font-size: 13px;"
+               wrapText="true" maxWidth="324"/>
+    </VBox>
+</StackPane>

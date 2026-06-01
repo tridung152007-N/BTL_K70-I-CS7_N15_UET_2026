@@ -2,43 +2,52 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<?import javafx.scene.shape.Circle?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.auction.client.controller.AuctionListController">
+            fx:controller="com.auction.client.controller.AuctionListController"
+            style="-fx-background-color: #f0f2f5;">
 
     <top>
-        <VBox spacing="10" style="-fx-padding: 15 20;">
-            <!-- Row 1: Title + Refresh + Profile Menu -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Latest Auctions" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
-                <Button text="🔄 Làm mới" fx:id="btnRefresh" onAction="#handleRefresh"
-                        style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
-
-                <!-- Spacer để đẩy profile menu sang phải -->
+        <VBox spacing="12" style="-fx-padding: 16 22 14 22; -fx-background-color: white;
+                                   -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;
+                                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="🏷 Latest Auctions"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                <Button text="⟳ Làm mới" fx:id="btnRefresh" onAction="#handleRefresh"
+                        style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb;
+                               -fx-font-weight: bold; -fx-background-radius: 8;
+                               -fx-border-color: #bfdbfe; -fx-border-width: 1;
+                               -fx-border-radius: 8; -fx-cursor: hand;"/>
                 <Region HBox.hgrow="ALWAYS"/>
-
-                <!-- Profile Menu (góc phải) -->
-                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 0 10; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;">
-                    <Circle radius="20" fx:id="profileAvatar"
-                            style="-fx-fill: #3498db;"/>
+                <HBox spacing="10" alignment="CENTER_RIGHT"
+                      style="-fx-padding: 4 10; -fx-background-color: #f8fafc;
+                             -fx-background-radius: 24; -fx-border-color: #e2e8f0;
+                             -fx-border-width: 1; -fx-border-radius: 24;">
+                    <Circle radius="18" fx:id="profileAvatar"
+                            style="-fx-fill: #2563eb;"/>
                     <ComboBox fx:id="userMenu" prefWidth="120"
-                              style="-fx-font-size: 12px;"/>
+                              style="-fx-font-size: 12.5px; -fx-background-color: transparent;
+                                     -fx-border-color: transparent;"/>
                 </HBox>
             </HBox>
 
-            <!-- Row 2: Search -->
-            <TextField promptText="Tìm kiếm sản phẩm..." fx:id="searchField"
-                       style="-fx-pref-height: 40;"/>
+            <TextField promptText="🔍  Tìm kiếm sản phẩm..." fx:id="searchField"
+                       prefHeight="42"
+                       style="-fx-background-color: #f8fafc; -fx-background-radius: 10;
+                              -fx-border-radius: 10; -fx-border-color: #e5e7eb;
+                              -fx-border-width: 1.5; -fx-font-size: 13.5px; -fx-padding: 8 14;"/>
         </VBox>
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: transparent; -fx-border-color: transparent;">
             <FlowPane fx:id="cardsContainer"
                       hgap="20" vgap="20"
-                      style="-fx-padding: 20;"
+                      style="-fx-padding: 22; -fx-background-color: transparent;"
                       prefWrapLength="1200"/>
         </ScrollPane>
     </center>
