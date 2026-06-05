@@ -46,17 +46,7 @@ public class AuctionWebSocketController {
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
     private final BidTransactionDAO bidTransactionDAO;
-
-    /**
-     * Map: sessionId â†’ userId
-     * DÃ¹ng Ä‘á»ƒ biáº¿t session nÃ o Ä‘ang giá»¯ bá»Ÿi user nÃ o,
-     * tá»« Ä‘Ã³ gá»­i riÃªng message Ä‘áº¿n Ä‘Ãºng session.
-     */
     private final ConcurrentHashMap<String, String> sessionUserMap = new ConcurrentHashMap<>();
-
-    /**
-     * Map: userId â†’ sessionId (nhiá»u tab/mÃ n hÃ¬nh cÃ¹ng 1 user láº¥y session má»›i nháº¥t)
-     */
     private final ConcurrentHashMap<String, String> userSessionMap = new ConcurrentHashMap<>();
 
     public AuctionWebSocketController(AuctionItemService auctionItemService,
@@ -73,13 +63,12 @@ public class AuctionWebSocketController {
         this.bidTransactionDAO = bidTransactionDAO;
     }
 
-    // â”€â”€ Session lifecycle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     @EventListener
     public void handleSessionConnected(SessionConnectedEvent event) {
         StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = sha.getSessionId();
-        System.out.println("ðŸ”Œ SESSION connected: " + sessionId);
+        System.out.println(" SESSION connected: " + sessionId);
     }
 
     @EventListener
@@ -89,33 +78,31 @@ public class AuctionWebSocketController {
         String userId = sessionUserMap.remove(sessionId);
         if (userId != null) {
             userSessionMap.remove(userId);
-            System.out.println("ðŸ”Œ SESSION disconnected: " + sessionId + " (user=" + userId + ")");
+            System.out.println(" SESSION disconnected: " + sessionId + " (user=" + userId + ")");
         }
     }
 
-    // â”€â”€ Main handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     @MessageMapping("/action")
     public void handleAction(@Payload String rawMessage, SimpMessageHeaderAccessor headerAccessor) {
         String sessionId = headerAccessor.getSessionId();
         String replyChannel = headerAccessor.getFirstNativeHeader("reply-to");
         if (replyChannel == null || replyChannel.isBlank()) replyChannel = sessionId;
-        System.out.println("ðŸ“¨ SERVER handleAction sessionId=" + sessionId + " len=" + (rawMessage == null ? 0 : rawMessage.length()));
+        System.out.println(" SERVER handleAction sessionId=" + sessionId + " len=" + (rawMessage == null ? 0 : rawMessage.length()));
 
         try {
             Message msg = JsonUtil.fromJson(rawMessage, Message.class);
-            System.out.println("ðŸ“© SERVER type=" + msg.getType() + " sender=" + msg.getSenderId());
+            System.out.println(" SERVER type=" + msg.getType() + " sender=" + msg.getSenderId());
 
             switch (msg.getType()) {
                 case LOGIN -> {
                     LoginRequest req = JsonUtil.fromJson(msg.getPayload(), LoginRequest.class);
                     User user = userService.login(req.username(), req.password());
 
-                    // Ghi nháº­n session â†” userId
                     String userId = user.getId();
                     sessionUserMap.put(sessionId, userId);
                     userSessionMap.put(userId, replyChannel);
-                    System.out.println("âœ… LOGIN mapped sessionId=" + sessionId + " â†’ userId=" + userId);
+                    System.out.println(" LOGIN mapped sessionId=" + sessionId + " â†’ userId=" + userId);
 
                     replyTo(replyChannel, MessageType.SUCCESS, JsonUtil.toJson(user));
                 }
@@ -129,6 +116,7 @@ public class AuctionWebSocketController {
                     } else {
                         newUser = new Bidder();
                     }
+                    newUser.setId(UUID.randomUUID().toString());
                     newUser.setUsername(req.username());
                     newUser.setEmail(req.email());
                     newUser.setRole(req.role());
@@ -158,7 +146,6 @@ public class AuctionWebSocketController {
                     itemService.addItem(item);
                     replyTo(replyChannel, MessageType.SUCCESS, "\"San pham da duoc gui duyet\"");
 
-                    // Broadcast cho Admin biáº¿t cÃ³ sáº£n pháº©m má»›i chá» duyá»‡t
                     broadcastAdminPendingUpdate();
                 }
                 case ITEM_UPDATE -> {
@@ -178,7 +165,6 @@ public class AuctionWebSocketController {
                 case ITEM_APPROVE -> {
                     ItemIdPayload ap = JsonUtil.fromJson(msg.getPayload(), ItemIdPayload.class);
 
-                    // Láº¥y sellerId trÆ°á»›c khi approve Ä‘á»ƒ notify Ä‘Ãºng ngÆ°á»i
                     Item item = itemService.getById(ap.itemId());
                     String sellerId = item.getSellerId();
                     String itemName = item.getName();
@@ -186,7 +172,6 @@ public class AuctionWebSocketController {
                     itemService.approveItem(ap.itemId());
                     replyTo(replyChannel, MessageType.SUCCESS, "\"Da duyet san pham\"");
 
-                    // Notify seller biáº¿t sáº£n pháº©m Ä‘Æ°á»£c duyá»‡t
                     notifySeller(sellerId, MessageType.ITEM_APPROVE,
                             "{\"itemId\":\"" + ap.itemId() + "\",\"itemName\":\"" + itemName + "\",\"status\":\"APPROVED\"}");
                 }
@@ -205,9 +190,9 @@ public class AuctionWebSocketController {
                             "{\"itemId\":\"" + rp.itemId() + "\",\"itemName\":\"" + itemName + "\",\"status\":\"REJECTED\"}");
                 }
                 case AUCTION_LIST -> {
-                    System.out.println("ðŸ“© SERVER AUCTION_LIST from " + msg.getSenderId());
+                    System.out.println(" SERVER AUCTION_LIST from " + msg.getSenderId());
                     List<Auction> auctions = auctionService.getRunningAuctions();
-                    System.out.println("ðŸ“© SERVER returning " + (auctions != null ? auctions.size() : 0) + " auctions");
+                    System.out.println(" SERVER returning " + (auctions != null ? auctions.size() : 0) + " auctions");
 
                     if (auctions != null && !auctions.isEmpty()) {
                         int pageSize = 5;
@@ -250,7 +235,6 @@ public class AuctionWebSocketController {
                     BidRequest br = JsonUtil.fromJson(msg.getPayload(), BidRequest.class);
                     BidTransaction bid = auctionService.placeBid(br.auctionId(), br.bidderId(), br.amount());
                     bid.setBidderName(userService.getUsername(br.bidderId()));
-                    // BID_UPDATE broadcast cho táº¥t cáº£ (ai Ä‘ang trong phÃ²ng Ä‘á»u tháº¥y)
                     broadcastBidUpdate(bid);
                     broadcastAuctionList();
                 }
@@ -271,7 +255,7 @@ public class AuctionWebSocketController {
                         "{\"error\":\"Unknown action: " + msg.getType() + "\"}");
             }
         } catch (Exception e) {
-            System.err.println("âŒ SERVER handleAction ERROR: " + e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(" SERVER handleAction ERROR: " + e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
             String errMsg = e.getMessage() == null ? "Internal error" : e.getMessage().replace("\"", "'");
             replyTo(replyChannel, MessageType.ERROR, "{\"error\":\"" + errMsg + "\"}");
@@ -290,66 +274,45 @@ public class AuctionWebSocketController {
         messagingTemplate.convertAndSend("/topic/auctions", items);
     }
 
-    // â”€â”€ Private helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    /**
-     * Gá»­i message riÃªng vá» Ä‘Ãºng session (khÃ´ng broadcast).
-     * DÃ¹ng /queue/reply thay vÃ¬ /topic/auctions Ä‘á»ƒ trÃ¡nh "rÃ²" message sang client khÃ¡c.
-     */
     private void replyTo(String sessionId, MessageType type, String payload) {
         Message response = new Message(type, "server", payload);
         String json = JsonUtil.toJson(response);
-        System.out.println("ðŸ“¤ SERVER replyTo sessionId=" + sessionId + " type=" + type + " len=" + json.length());
+        System.out.println(" SERVER replyTo sessionId=" + sessionId + " type=" + type + " len=" + json.length());
         try {
-            // Gá»­i Ä‘áº¿n queue riÃªng cá»§a session cá»¥ thá»ƒ
             messagingTemplate.convertAndSend("/queue/reply-" + sessionId, json);
-            System.out.println("âœ… SERVER replyTo " + type + " sent");
+            System.out.println(" SERVER replyTo " + type + " sent");
         } catch (Exception e) {
-            System.err.println("âŒ SERVER replyTo " + type + " ERROR: " + e.getMessage());
+            System.err.println(" SERVER replyTo " + type + " ERROR: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    /**
-     * Broadcast BID_UPDATE Ä‘áº¿n táº¥t cáº£ client Ä‘ang subscribe /topic/auctions.
-     */
     private void broadcastBidUpdate(BidTransaction bid) {
         Message msg = new Message(MessageType.BID_UPDATE, "server", JsonUtil.toJson(bid));
         messagingTemplate.convertAndSend("/topic/auctions", JsonUtil.toJson(msg));
     }
 
-    /**
-     * Broadcast AUCTION_LIST Ä‘áº¿n táº¥t cáº£ client (khi cÃ³ phiÃªn má»›i hoáº·c cÃ³ bid má»›i).
-     */
     private void broadcastAuctionList() {
         List<Auction> updated = auctionService.getRunningAuctions();
         Message msg = new Message(MessageType.AUCTION_LIST, "server", JsonUtil.toJson(updated));
         messagingTemplate.convertAndSend("/topic/auctions", JsonUtil.toJson(msg));
-        System.out.println("ðŸ“¡ BROADCAST AUCTION_LIST â†’ " + (updated != null ? updated.size() : 0) + " auctions");
+        System.out.println(" BROADCAST AUCTION_LIST  " + (updated != null ? updated.size() : 0) + " auctions");
     }
 
-    /**
-     * Broadcast cho Admin biáº¿t cÃ³ sáº£n pháº©m má»›i/thay Ä‘á»•i tráº¡ng thÃ¡i cáº§n duyá»‡t.
-     * Gá»­i lÃªn /topic/admin Ä‘á»ƒ Admin Ä‘ang online tháº¥y ngay.
-     */
     private void broadcastAdminPendingUpdate() {
         List<Item> pending = itemService.getPendingItems();
         Message msg = new Message(MessageType.ITEM_PENDING_LIST, "server", JsonUtil.toJson(pending));
         messagingTemplate.convertAndSend("/topic/admin", JsonUtil.toJson(msg));
-        System.out.println("ðŸ“¡ BROADCAST ADMIN pending â†’ " + pending.size() + " items");
+        System.out.println(" BROADCAST ADMIN pending â†’ " + pending.size() + " items");
     }
 
-    /**
-     * Gá»­i thÃ´ng bÃ¡o Ä‘áº¿n má»™t Seller cá»¥ thá»ƒ (khi sáº£n pháº©m Ä‘Æ°á»£c duyá»‡t/tá»« chá»‘i).
-     * DÃ¹ng /queue/reply-<sessionId> cá»§a seller Ä‘Ã³.
-     */
     private void notifySeller(String sellerId, MessageType type, String payload) {
         String sellerSessionId = userSessionMap.get(sellerId);
         if (sellerSessionId != null) {
             replyTo(sellerSessionId, type, payload);
-            System.out.println("ðŸ“© NOTIFY seller=" + sellerId + " type=" + type);
+            System.out.println(" NOTIFY seller=" + sellerId + " type=" + type);
         } else {
-            System.out.println("âš ï¸ Seller " + sellerId + " khÃ´ng online, bá» qua notify");
+            System.out.println("Seller " + sellerId + " không online, bỏ qua notify");
         }
     }
 
