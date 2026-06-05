@@ -149,4 +149,4 @@ mvn javafx:run -pl client
 
 ## Báo cáo & Demo
 
-- 📄 **Báo cáo PDF:**file:///C:/Users/admin/Downloads/BaoCao_DauGia_BTL_CS7_N15%20(1).pdf
+- 📄 **Báo cáo PDF:  file:///C:/Users/ADMIN/Downloads/BaoCao_DauGia_BTL_CS7_N15%20(1).pdf
