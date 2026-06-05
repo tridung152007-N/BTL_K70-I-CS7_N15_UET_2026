@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.shape.Circle?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.auction.client.controller.AuctionListController">
+
+    <top>
+        <VBox spacing="10" style="-fx-padding: 15 20;">
+            <!-- Row 1: Title + Refresh + Profile Menu -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Latest Auctions" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Button text="🔄 Làm mới" fx:id="btnRefresh" onAction="#handleRefresh"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+
+                <!-- Spacer để đẩy profile menu sang phải -->
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Profile Menu (góc phải) -->
+                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 0 10; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;">
+                    <Circle radius="20" fx:id="profileAvatar"
+                            style="-fx-fill: #3498db;"/>
+                    <ComboBox fx:id="userMenu" prefWidth="120"
+                              style="-fx-font-size: 12px;"/>
+                </HBox>
+            </HBox>
+
+            <!-- Row 2: Search -->
+            <TextField promptText="Tìm kiếm sản phẩm..." fx:id="searchField"
+                       style="-fx-pref-height: 40;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <FlowPane fx:id="cardsContainer"
+                      hgap="20" vgap="20"
+                      style="-fx-padding: 20;"
+                      prefWrapLength="1200"/>
+        </ScrollPane>
+    </center>
+</BorderPane>

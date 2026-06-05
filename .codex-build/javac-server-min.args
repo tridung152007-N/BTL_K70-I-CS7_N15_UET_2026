@@ -1,0 +1,9 @@
+-encoding
+UTF-8
+--release
+21
+-cp
+C:\Users\admin\Documents\Codex\2026-06-05\files-mentioned-by-the-user-auction-2\work\auction-system-fixed-extract\auction-system-fixed\common\target\classes;C:\Users\admin\Documents\Codex\2026-06-05\files-mentioned-by-the-user-auction-2\work\auction-system-fixed-extract\auction-system-fixed\server\target\classes;C:\Users\admin\.m2\repository\org\springframework\spring-messaging\6.1.13\spring-messaging-6.1.13.jar;C:\Users\admin\.m2\repository\org\springframework\spring-context\6.1.13\spring-context-6.1.13.jar;C:\Users\admin\.m2\repository\org\springframework\spring-core\6.1.13\spring-core-6.1.13.jar;C:\Users\admin\.m2\repository\org\springframework\spring-beans\6.1.13\spring-beans-6.1.13.jar;C:\Users\admin\.m2\repository\org\springframework\spring-websocket\6.1.13\spring-websocket-6.1.13.jar;C:\Users\admin\.m2\repository\com\google\code\gson\gson\2.11.0\gson-2.11.0.jar
+-d
+C:\Users\admin\Documents\Codex\2026-06-05\files-mentioned-by-the-user-auction-2\work\auction-system-fixed-extract\auction-system-fixed\server\target\classes
+C:\Users\admin\Documents\Codex\2026-06-05\files-mentioned-by-the-user-auction-2\work\auction-system-fixed-extract\auction-system-fixed\server\src\main\java\com\auction\server\controller\AuctionWebSocketController.java

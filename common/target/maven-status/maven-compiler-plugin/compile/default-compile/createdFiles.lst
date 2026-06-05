@@ -1,0 +1,8 @@
+com\auction\common\exception\AuctionClosedException.class
+com\auction\common\network\Message.class
+com\auction\common\exception\InvalidBidException.class
+com\auction\common\exception\UserNotFoundException.class
+com\auction\common\model\AuctionState.class
+com\auction\common\util\Constants.class
+com\auction\common\network\MessageType.class
+com\auction\common\util\JsonUtil.class

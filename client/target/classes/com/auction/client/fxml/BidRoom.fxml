@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.auction.client.controller.BidRoomController"
+            prefWidth="1080"
+            prefHeight="760"
+            style="-fx-background-color: #f8f9fa;">
+
+    <top>
+        <VBox spacing="10" style="-fx-padding: 14; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button text="Quay lai" onAction="#goBack"
+                        style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-padding: 8 18;"/>
+                <Label fx:id="itemNameLabel"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Label fx:id="timerLabel"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+            </HBox>
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <Label text="Gia hien tai:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <Label fx:id="currentPriceLabel"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+                <Label fx:id="currentLeaderLabel"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Label fx:id="walletBalanceLabel"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #16a085;"/>
+                <Label fx:id="paymentStatusLabel"
+                       style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                <Button fx:id="payButton" text="Thanh toan" onAction="#handlePay"
+                        style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 18;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.58" style="-fx-padding: 15; -fx-background-color: transparent;">
+            <VBox spacing="10">
+                <Label text="Bieu do gia" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <StackPane fx:id="chartContainer"
+                           prefHeight="430"
+                           style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-radius: 6;"/>
+            </VBox>
+            <VBox spacing="10">
+                <Label text="Lich su nguoi dau gia" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <TableView fx:id="bidHistoryTable" prefHeight="430">
+                    <columns>
+                        <TableColumn fx:id="colBidder" text="Nguoi dau gia" prefWidth="160"/>
+                        <TableColumn fx:id="colAmount" text="So tien" prefWidth="120"/>
+                        <TableColumn fx:id="colTime" text="Thoi gian" prefWidth="150"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </SplitPane>
+    </center>
+
+    <bottom>
+        <VBox spacing="12" style="-fx-padding: 18; -fx-background-color: #ffffff; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Dat gia:" style="-fx-font-weight: bold; -fx-font-size: 15px;"/>
+                <TextField fx:id="bidAmountField" promptText="Nhap so tien (VND)" prefWidth="260"/>
+                <Button text="Dat gia ngay" onAction="#handleBid"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 9 24;"/>
+            </HBox>
+
+            <TitledPane text="Auto Bidding" collapsible="true" expanded="false">
+                <VBox spacing="12" style="-fx-padding: 15;">
+                    <HBox spacing="12">
+                        <TextField fx:id="maxBidField" promptText="Gia toi da (VND)" prefWidth="220"/>
+                        <TextField fx:id="incrementField" promptText="Buoc gia" prefWidth="150"/>
+                        <Button text="Bat Auto-Bid" onAction="#handleAutoBid"
+                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 9 18; -fx-font-weight: bold;"/>
+                    </HBox>
+                </VBox>
+            </TitledPane>
+        </VBox>
+    </bottom>
+</BorderPane>

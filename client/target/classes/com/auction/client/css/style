@@ -1,0 +1,94 @@
+/* ====================== STYLE CHUNG ====================== */
+.root {
+    -fx-font-family: "Segoe UI", system-ui, Arial, sans-serif;
+}
+
+/* Top Bar */
+.top-bar {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* ====================== PROFILE MENU ====================== */
+.profile-menu-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 6 12;
+    -fx-background-radius: 30;
+}
+
+.profile-menu-button:hover {
+    -fx-background-color: #f1f3f5;
+    -fx-background-radius: 30;
+}
+
+.profile-menu-button .label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-weight: bold;
+    -fx-font-size: 14.5px;
+}
+
+/* Avatar */
+.avatar-circle {
+    -fx-stroke: #ffffff;
+    -fx-stroke-width: 3.5;
+    -fx-fill: #3498db;
+}
+
+.profile-menu-button:hover .avatar-circle {
+    -fx-stroke: #2980b9;
+    -fx-stroke-width: 4;
+}
+
+/* Shadow cho avatar */
+.avatar-container {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 8, 0.2, 0, 2);
+}
+
+/* Menu Items */
+.menu-item {
+    -fx-padding: 8 20;
+}
+
+.menu-item:hover {
+    -fx-background-color: #e3f2fd;
+}
+
+/* Button chung */
+.button {
+    -fx-background-radius: 8;
+    -fx-padding: 8 18;
+    -fx-font-size: 14px;
+}
+
+.button-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.button-primary:hover {
+    -fx-background-color: #2980b9;
+}
+
+.button-success {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+}
+
+.button-success:hover {
+    -fx-background-color: #219653;
+}
+
+/* Status Label */
+.status-success { -fx-text-fill: #27ae60; -fx-font-weight: bold; }
+.status-error   { -fx-text-fill: #e74c3c; -fx-font-weight: bold; }
+
+/* Table hover */
+.table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}

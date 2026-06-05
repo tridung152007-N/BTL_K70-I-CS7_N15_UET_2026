@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.ProfileController"
+      alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 5 10;">
+
+    <MenuButton fx:id="profileMenuButton" styleClass="profile-menu-button">
+        <graphic>
+            <Circle radius="22" fill="#3498db" stroke="#ffffff" strokeWidth="3"/>
+        </graphic>
+
+        <items>
+            <MenuItem text="Thong tin ca nhan" onAction="#showProfileInfo"/>
+            <MenuItem text="Nap tien" onAction="#topUpWallet"/>
+            <MenuItem text="Nhat ky hoat dong" onAction="#showActivityLog"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Dang xuat" onAction="#logout" style="-fx-text-fill: #e74c3c;"/>
+        </items>
+    </MenuButton>
+</HBox>

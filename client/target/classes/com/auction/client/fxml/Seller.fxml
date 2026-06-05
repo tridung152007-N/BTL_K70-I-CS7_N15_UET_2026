@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.auction.client.controller.SellerController">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox spacing="15" style="-fx-padding: 12; -fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <Label text="Quản lý sản phẩm - Seller"
+                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+            <Button text="🔄 Làm mới" onAction="#handleRefresh"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+
+            <HBox HBox.hgrow="ALWAYS"/>
+
+            <!-- Profile Menu -->
+            <fx:include source="/com/auction/client/fxml/ProfileMenu.fxml"/>
+        </HBox>
+    </top>
+
+    <center>
+        <SplitPane dividerPositions="0.45" style="-fx-padding: 10;">
+
+            <!-- BÊN TRÁI: Danh sách sản phẩm -->
+            <VBox spacing="10">
+                <Label text="Danh sách sản phẩm" style="-fx-font-weight: bold; -fx-font-size: 15;"/>
+                <TableView fx:id="itemTable" prefHeight="600">
+                    <columns>
+                        <TableColumn fx:id="colName" text="Tên sản phẩm" prefWidth="220"/>
+                        <TableColumn fx:id="colCategory" text="Loại" prefWidth="130"/>
+                        <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="160"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- BÊN PHẢI: Form + Tạo phiên đấu giá -->
+            <VBox spacing="15" style="-fx-padding: 10;">
+
+                <!-- Form thêm/sửa sản phẩm -->
+                <Label text="Thông tin sản phẩm" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="nameField" promptText="Tên sản phẩm"/>
+                <TextArea fx:id="descField" promptText="Mô tả" prefHeight="70"/>
+                <ComboBox fx:id="categoryBox" promptText="Chọn loại sản phẩm"/>
+
+                <!-- Fields theo loại -->
+                <VBox fx:id="electronicsFields" spacing="8">
+                    <TextField fx:id="brandField" promptText="Thương hiệu"/>
+                    <TextField fx:id="warrantyField" promptText="Thời gian bảo hành (tháng)"/>
+                </VBox>
+                <VBox fx:id="artFields" spacing="8" visible="false" managed="false">
+                    <TextField fx:id="artistField" promptText="Nghệ sĩ"/>
+                    <TextField fx:id="artYearField" promptText="Năm sáng tác"/>
+                </VBox>
+                <VBox fx:id="vehicleFields" spacing="8" visible="false" managed="false">
+                    <TextField fx:id="kmField" promptText="Số km đã chạy"/>
+                    <TextField fx:id="mfYearField" promptText="Năm sản xuất"/>
+                </VBox>
+
+                <HBox spacing="10">
+                    <Button text="Thêm mới" onAction="#handleAdd" styleClass="button-success"/>
+                    <Button text="Sửa" onAction="#handleEdit"/>
+                    <Button text="Xóa" onAction="#handleDelete"/>
+                    <Button text="Làm sạch" onAction="#handleClear"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="📸 Chọn ảnh sản phẩm" onAction="#handleChooseImage" />
+                    <Label fx:id="imagePathLabel" text="Chưa chọn ảnh" style="-fx-text-fill: #7f8c8d;"/>
+                </HBox>
+
+                <!-- Phần Tạo Phiên Đấu Giá -->
+                <Separator/>
+                <Label text="Tạo phiên đấu giá" style="-fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+
+                <TextField fx:id="startingPriceField" promptText="Giá khởi điểm (VNĐ)"/>
+                <TextField fx:id="durationHoursField" promptText="Thời gian đấu giá (giờ)"/>
+
+                <Button text="🚀 Tạo phiên đấu giá"
+                        onAction="#handleCreateAuction"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 15px; -fx-padding: 10;"/>
+
+                <Label fx:id="statusLabel" style="-fx-font-size: 14px; -fx-wrap-text: true;"/>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.auction.client.controller.AuctionDashboardController"
+            prefHeight="700"
+            prefWidth="1200"
+            style="-fx-background-color: #f8f9fa;">
+
+    <!-- TOP HEADER -->
+    <top>
+        <HBox spacing="15" style="-fx-padding: 12; -fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+            <Label text="Latest Auctions"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Button text="🔄 Làm mới" onAction="#handleRefresh"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <fx:include source="/com/auction/client/fxml/ProfileMenu.fxml"/>
+        </HBox>
+    </top>
+
+    <!-- CENTER CONTENT -->
+    <center>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <TextField fx:id="searchField" promptText="Tìm kiếm sản phẩm..."
+                       style="-fx-pref-height: 40;"/>
+
+            <Label fx:id="emptyStateLabel"
+                   text="Chưa có phiên đấu giá nào. Vui lòng thử làm mới hoặc tạo phiên mới."
+                   wrapText="true"
+                   visible="false"
+                   style="-fx-text-fill: #7f8c8d; -fx-font-size: 14px; -fx-alignment: center;"
+                   maxWidth="1000"/>
+
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <TilePane fx:id="auctionGrid"
+                          hgap="20" vgap="20"
+                          prefColumns="3"
+                          tileAlignment="CENTER"
+                          style="-fx-background-color: transparent; -fx-padding: 10;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>
