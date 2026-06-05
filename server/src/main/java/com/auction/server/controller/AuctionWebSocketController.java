@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.auction.server.model.*;
+import com.auction.server.service.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -20,20 +22,6 @@ import com.auction.common.network.Message;
 import com.auction.common.network.MessageType;
 import com.auction.common.util.JsonUtil;
 import com.auction.server.dao.BidTransactionDAO;
-import com.auction.server.model.Art;
-import com.auction.server.model.Auction;
-import com.auction.server.model.AuctionItem;
-import com.auction.server.model.BidTransaction;
-import com.auction.server.model.Bidder;
-import com.auction.server.model.Electronics;
-import com.auction.server.model.Item;
-import com.auction.server.model.Seller;
-import com.auction.server.model.User;
-import com.auction.server.model.Vehicle;
-import com.auction.server.service.AuctionItemService;
-import com.auction.server.service.AuctionService;
-import com.auction.server.service.ItemService;
-import com.auction.server.service.UserService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -48,19 +36,21 @@ public class AuctionWebSocketController {
     private final BidTransactionDAO bidTransactionDAO;
     private final ConcurrentHashMap<String, String> sessionUserMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> userSessionMap = new ConcurrentHashMap<>();
+    private final AutoBidService autoBidService;
 
     public AuctionWebSocketController(AuctionItemService auctionItemService,
                                       ItemService itemService,
                                       AuctionService auctionService,
                                       UserService userService,
                                       SimpMessagingTemplate messagingTemplate,
-                                      BidTransactionDAO bidTransactionDAO) {
+                                      BidTransactionDAO bidTransactionDAO, AutoBidService autoBidService) {
         this.auctionItemService = auctionItemService;
         this.itemService = itemService;
         this.auctionService = auctionService;
         this.userService = userService;
         this.messagingTemplate = messagingTemplate;
         this.bidTransactionDAO = bidTransactionDAO;
+        this.autoBidService = autoBidService;
     }
 
 
@@ -251,6 +241,22 @@ public class AuctionWebSocketController {
                     replyTo(replyChannel, MessageType.PAYMENT_PAY, resp.toString());
                     broadcastAuctionList();
                 }
+                case AUTO_BID_REGISTER -> {
+                    AutoBidPayload ab = JsonUtil.fromJson(msg.getPayload(), AutoBidPayload.class);
+                    AutoBidConfig config = new AutoBidConfig(
+                            ab.auctionId(),
+                            ab.bidderId(),
+                            ab.maxBid(),
+                            ab.increment()
+                    );
+                    autoBidService.registerAutoBid(config);
+                    replyTo(replyChannel, MessageType.SUCCESS, "\"Auto-bid da duoc dang ky\"");
+                }
+                case AUTO_BID_CANCEL -> {
+                    AutoBidCancelPayload ac = JsonUtil.fromJson(msg.getPayload(), AutoBidCancelPayload.class);
+                    autoBidService.cancelAutoBid(ac.auctionId(), ac.bidderId());
+                    replyTo(replyChannel, MessageType.SUCCESS, "\"Auto-bid da huy\"");
+                }
                 default -> replyTo(replyChannel, MessageType.ERROR,
                         "{\"error\":\"Unknown action: " + msg.getType() + "\"}");
             }
@@ -343,4 +349,6 @@ public class AuctionWebSocketController {
     private record UserIdPayload(String userId) {}
     private record WalletRequest(String userId, double amount) {}
     private record PaymentRequest(String auctionId, String userId) {}
+    private record AutoBidPayload(String auctionId, String bidderId, double maxBid, double increment) {}
+    private record AutoBidCancelPayload(String auctionId, String bidderId) {}
 }
