@@ -1,113 +1,152 @@
 # Auction System – Hệ thống đấu giá trực tuyến
 
-> Bài tập lớn môn Lập trình nâng cao – Java
+Hệ thống đấu giá trực tuyến theo thời gian thực, cho phép nhiều người dùng từ nhiều máy tính khác nhau cùng tham gia đấu giá sản phẩm. Người bán đăng sản phẩm, quản trị viên duyệt, người mua vào phòng đấu giá và đặt giá cạnh tranh. Kết quả cập nhật tức thì đến tất cả người dùng đang online.
+
+## Công nghệ sử dụng
+
+| Thành phần | Công nghệ |
+|------------|-----------|
+| Ngôn ngữ | Java 21 |
+| Build tool | Maven 3.9+ |
+| Server framework | Spring Boot 3.3.4 |
+| Giao tiếp real-time | WebSocket + STOMP |
+| Giao diện client | JavaFX 21.0.3 |
+| Cơ sở dữ liệu | MySQL 8+ |
+| Serialization | Gson 2.11.0 |
+| Mã hoá mật khẩu | jBCrypt 0.4 |
+| Quản lý phụ thuộc | Lombok 1.18.46 |
+
+## Yêu cầu cài đặt
+
+- **JDK 21+** — [tải tại đây](https://adoptium.net/)
+- **Maven 3.9+** — [tải tại đây](https://maven.apache.org/download.cgi)
+- **MySQL 8+** — [tải tại đây](https://dev.mysql.com/downloads/)
+
+Kiểm tra đã cài đúng chưa:
+```bash
+java -version    # cần >= 21
+mvn -version     # cần >= 3.9
+mysql --version  # cần >= 8.0
+```
 
 ## Cấu trúc module
 
-| Module   | Mô tả |
-|----------|-------|
-| `common` | DTO, Exception, MessageType, JsonUtil dùng chung giữa server và client |
-| `server` | Spring Boot WebSocket server – business logic, DAO (MySQL), AuctionTimer |
-| `client` | JavaFX GUI – Controller, SocketClient (STOMP), các màn hình đấu giá |
+```
+auction-system/
+├── common/          # DTO, Exception, MessageType, JsonUtil dùng chung
+├── server/          # Spring Boot server – WebSocket, business logic, DAO, MySQL
+├── client/          # JavaFX client – giao diện người dùng, kết nối STOMP
+├── migrate_add_status.sql       # Migration thêm cột status cho bảng items
+├── migrate_wallet_payment.sql   # Migration thêm bảng ví và thanh toán
+└── pom.xml
+```
 
-## Yêu cầu
+## Cài đặt database
 
-- Java 21+
-- Maven 3.9+
-- MySQL 8+ (database `auction_db`)
+```sql
+-- Tạo database
+CREATE DATABASE auction_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-## Cấu hình
+-- Chạy migration
+USE auction_db;
+SOURCE migrate_add_status.sql;
+SOURCE migrate_wallet_payment.sql;
+```
 
-### Server (`server/src/main/resources/application.yml`)
-
+Cấu hình kết nối MySQL trong `server/src/main/resources/application.yml`:
 ```yaml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/auction_db?useSSL=false&serverTimezone=UTC
     username: root
-    password: 12345
-server:
-  port: 8080
+    password: 12345   # đổi thành password MySQL của bạn
 ```
 
-### Client (`client/src/main/resources/config.properties`)
+## Cấu hình kết nối LAN
 
+Nếu client chạy trên máy khác (kết nối qua mạng LAN), sửa file `client/src/main/resources/config.properties`:
 ```properties
-server.host=localhost
+server.host=192.168.x.x   # IP của máy chạy server
 server.port=8080
 server.ws.endpoint=/ws-auction
 ```
 
-> **Kết nối LAN:** đổi `server.host` thành IP máy chạy server, ví dụ `server.host=192.168.1.10`
+Nếu chạy cùng một máy, giữ nguyên `server.host=localhost`.
 
-## Build & Chạy
+## Build
 
 ```bash
-# Build toàn bộ (bỏ qua test để tránh lỗi JDK version mismatch)
+# Tất cả hệ điều hành (Windows / Linux / macOS)
 mvn clean install -Dmaven.test.skip=true
+```
 
-# Chạy Server
+> Thêm `-Dmaven.test.skip=true` để tránh lỗi khi JDK version cao hơn 21.
+
+## Chạy chương trình
+
+**Bước 1 — Chạy Server trước** (máy chủ):
+
+```bash
+# Windows / Linux / macOS
 mvn spring-boot:run -pl server
+```
 
-# Chạy Client (terminal khác)
+Chờ đến khi thấy log:
+```
+🚀 AUCTION SERVER ĐÃ KHỞI ĐỘNG!
+Server IP: 192.168.x.x
+Server Port: 8080
+```
+
+**Bước 2 — Chạy Client** (mỗi máy người dùng mở một terminal riêng):
+
+```bash
+# Windows / Linux / macOS
 mvn javafx:run -pl client
 ```
 
-> **Lưu ý JDK:** Project được cấu hình cho Java 21. Nếu Maven chạy với JDK cao hơn (ví dụ JDK 25), hãy thêm `-Dmaven.test.skip=true` khi build để tránh lỗi compile test.
+> Server phải chạy trước. Client chạy sau. Nhiều máy có thể chạy client cùng lúc.
 
-## Tính năng
+## Chức năng đã hoàn thành
 
-| Nhóm | Chức năng |
-|------|-----------|
-| **Xác thực** | Đăng ký, đăng nhập, đăng xuất (Bidder / Seller / Admin) |
-| **Đấu giá** | Xem danh sách, vào phòng đấu giá real-time qua WebSocket/STOMP |
-| **Đặt giá** | Đặt giá thủ công, auto-bid (đặt giá tự động theo giới hạn) |
-| **Seller** | Thêm / sửa / xóa item, tạo phiên đấu giá |
-| **Admin** | Duyệt / từ chối item, quản lý hệ thống |
-| **Ví tiền** | Nạp tiền, xem số dư, thanh toán sau khi thắng |
-| **Lịch sử** | Xem lịch sử đặt giá của từng phiên |
+**Xác thực người dùng**
+- [x] Đăng ký tài khoản (vai trò Bidder hoặc Seller)
+- [x] Đăng nhập / Đăng xuất
+- [x] Mã hoá mật khẩu bằng BCrypt
 
-## Design Patterns
+**Quản lý sản phẩm (Seller)**
+- [x] Thêm sản phẩm (3 loại: Xe cộ, Nghệ thuật, Điện tử)
+- [x] Sửa / Xoá sản phẩm
+- [x] Theo dõi trạng thái duyệt (Chờ duyệt / Đã duyệt / Từ chối)
+- [x] Nhận thông báo real-time khi sản phẩm được duyệt hoặc bị từ chối
+- [x] Tạo phiên đấu giá từ sản phẩm đã được duyệt
 
-| Pattern | Áp dụng |
-|---------|---------|
-| **Singleton** | `SocketClient` – một kết nối STOMP duy nhất cho toàn client |
-| **Factory Method** | `ItemFactory` – tạo các loại item (Art, Electronics, Vehicle) |
-| **Observer** | `AuctionService` → `AuctionObserver` → broadcast tới client |
-| **DAO** | `AuctionDAO`, `UserDAO`, `ItemDAO`, `BidTransactionDAO` tách biệt persistence |
+**Quản trị viên (Admin)**
+- [x] Xem danh sách sản phẩm chờ duyệt
+- [x] Duyệt hoặc từ chối sản phẩm
+- [x] Nhận cập nhật real-time khi có sản phẩm mới gửi lên
 
-## Giao tiếp Client ↔ Server
+**Đấu giá (Bidder)**
+- [x] Xem danh sách phiên đấu giá đang diễn ra
+- [x] Vào phòng đấu giá
+- [x] Đặt giá thủ công
+- [x] Đặt giá tự động (Auto-bid) theo giới hạn tối đa và bước tăng
+- [x] Xem lịch sử đặt giá trong phòng
+- [x] Biểu đồ lịch sử giá theo thời gian
+- [x] Đồng hồ đếm ngược thời gian còn lại
+- [x] Cập nhật giá real-time đến tất cả người dùng trong phòng
+- [x] Tự động kết thúc phiên khi hết giờ
 
-Client gửi `Message` JSON qua STOMP destination `/app/action`.  
-Server trả kết quả về `/topic/auctions`, `/topic/admin`, hoặc `/queue/reply-{clientId}`.
+**Ví tiền & Thanh toán**
+- [x] Xem số dư ví
+- [x] Nạp tiền vào ví
+- [x] Thanh toán sau khi thắng đấu giá
 
-```
-MessageType: LOGIN, REGISTER, AUCTION_LIST, AUCTION_CREATE,
-             BID_PLACE, BID_HISTORY, AUCTION_END,
-             WALLET_TOP_UP, WALLET_BALANCE, PAYMENT_PAY,
-             ITEM_ADD/UPDATE/DELETE, ITEM_APPROVE/REJECT,
-             AUTO_BID_REGISTER/CANCEL, ERROR, SUCCESS
-```
+**Đồng bộ real-time (nhiều máy)**
+- [x] Khi một máy đặt giá, tất cả máy khác thấy giá mới ngay lập tức
+- [x] Khi một máy tạo phiên đấu giá mới, tất cả máy khác thấy trong danh sách ngay
+- [x] Khi Seller thêm sản phẩm, Admin online thấy thông báo ngay
 
-## Database
+## Báo cáo & Demo
 
-Chạy migration trước khi khởi động server lần đầu:
-
-```sql
--- Thêm cột status cho item
-source migrate_add_status.sql
-
--- Thêm bảng ví và thanh toán
-source migrate_wallet_payment.sql
-```
-
-## Conventional Commits
-
-```
-feat: thêm tính năng mới
-fix:  sửa lỗi
-test: thêm/sửa test
-docs: cập nhật tài liệu
-refactor: tái cấu trúc code
-```
-Link báo cáo :file:///C:/Users/admin/Downloads/BaoCao_DauGia_BTL_CS7_N15%20(1).pdf
+- 📄 **Báo cáo PDF:**file:///C:/Users/admin/Downloads/BaoCao_DauGia_BTL_CS7_N15%20(1).pdf
