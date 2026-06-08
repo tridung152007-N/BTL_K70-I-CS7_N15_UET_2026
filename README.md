@@ -150,3 +150,4 @@ mvn javafx:run -pl client
 ## Báo cáo & Demo
 
 - 📄 **Báo cáo PDF:  https://drive.google.com/file/d/1xfxpS3oNwmX3OxWsI3hijHOUOCSzoyBx/view?usp=sharing
+- 📄 **Demo PDF: https://drive.google.com/file/d/12kKMH_3FQfyjw_NsRDu9DOl-OgR485Rr/view?usp=sharing
