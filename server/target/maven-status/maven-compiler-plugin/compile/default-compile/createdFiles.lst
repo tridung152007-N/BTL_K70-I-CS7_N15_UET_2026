@@ -23,6 +23,7 @@ com\auction\server\controller\AuctionWebSocketController$WalletRequest.class
 com\auction\server\dao\UserDAO.class
 com\auction\common\model\AuctionState.class
 com\auction\server\controller\AuctionWebSocketController.class
+com\auction\server\controller\AuctionWebSocketController$AutoBidCancelPayload.class
 com\auction\server\model\Auction.class
 com\auction\server\AuctionSystemApplication.class
 com\auction\server\model\Seller.class
@@ -30,6 +31,7 @@ com\auction\server\controller\AuctionWebSocketController$LoginRequest.class
 com\auction\server\model\AutoBidConfig.class
 com\auction\server\controller\AuctionWebSocketController$ItemIdPayload.class
 com\auction\server\controller\AuctionWebSocketController$PaymentRequest.class
+com\auction\server\controller\AuctionWebSocketController$AutoBidPayload.class
 com\auction\common\exception\AuctionClosedException.class
 com\auction\server\observer\AuctionSubject.class
 com\auction\server\service\UserService.class

@@ -15,6 +15,7 @@ com\auction\common\exception\InvalidBidException.class
 com\auction\client\service\AuctionClientService$PaymentRequest.class
 com\auction\server\model\BidTransaction.class
 com\auction\server\model\Bidder.class
+com\auction\client\controller\BidRoomController$2.class
 com\auction\client\service\AutoBidClientService.class
 com\auction\server\model\Electronics.class
 com\auction\client\observer\BidUpdateObserver.class

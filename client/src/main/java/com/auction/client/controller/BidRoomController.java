@@ -88,6 +88,21 @@ public class BidRoomController {
             colBidder.setCellValueFactory(new PropertyValueFactory<>("bidderName"));
             colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
             colTime.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+            colTime.setCellFactory(col -> new javafx.scene.control.TableCell<BidTransaction, Long>() {
+                @Override
+                protected void updateItem(Long timestamp, boolean empty) {
+                    super.updateItem(timestamp, empty);
+                    if (empty || timestamp == null) {
+                        setText(null);
+                    } else {
+                        java.time.LocalDateTime dt = java.time.LocalDateTime.ofInstant(
+                                java.time.Instant.ofEpochMilli(timestamp),
+                                java.time.ZoneId.systemDefault()
+                        );
+                        setText(dt.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM")));
+                    }
+                }
+            });
             bidHistoryTable.setItems(bidList);
         }
     }
